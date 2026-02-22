@@ -3,7 +3,7 @@
 import { Feed } from '@/components/feed/feed'
 import { CreatePost } from '@/components/feed/create-post'
 import { PostProps } from '@/components/feed/post-card'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Globe, Users, Loader2 } from 'lucide-react'
 
@@ -54,88 +54,119 @@ export default function HomeFeedPage() {
   const [feedType, setFeedType] = useState<'following' | 'global'>('global')
   const { connected, publicKey } = useWallet()
 
-  useEffect(() => {
+  const fetchPosts = useCallback(async () => {
+    setIsLoadingFeed(true)
     if (feedType === 'global') {
-      setIsLoadingFeed(true)
-      const fetchGlobalFeed = async () => {
-        try {
-          const res = await fetch('/api/contents/feed')
-          if (!res.ok) throw new Error('Failed to fetch feed')
-          
-          const data = await res.json()
+      try {
+        const res = await fetch('/api/contents/feed')
+        if (!res.ok) throw new Error('Failed to fetch feed')
+        
+        const data = await res.json()
           if (data && data.contents) {
             const tapestryPosts: PostProps[] = data.contents.map((item: any) => {
-              const textProp = item.content.properties?.find((p: any) => p.key === 'text')
-              const subnetProp = item.content.properties?.find((p: any) => p.key === 'subnet')
+              let contentText = item.content.text || '';
+              let subnetValue = '';
+              let imageUrlValue: string | undefined = undefined;
+              
+              if (contentText.includes('|TAPESTRY_META|')) {
+                  const parts = contentText.split('|TAPESTRY_META|');
+                  contentText = parts[0].trim();
+                  const meta = parts[1];
+                  
+                  const subnetMatch = meta.match(/subnet=([^|]+)/);
+                  if (subnetMatch) subnetValue = subnetMatch[1];
+                  
+                const imgMatch = meta.match(/imageUrl=([^|]+)/);
+                if (imgMatch) imageUrlValue = imgMatch[1];
+            }
+            
+            // Check for top-level imageUrl returned by Tapestry API
+            if (!imageUrlValue && item.content.imageUrl) {
+                imageUrlValue = item.content.imageUrl;
+            }
+
+            if (!imageUrlValue && !contentText.includes('|TAPESTRY_META|')) {
+               // Fallback to legacy properties if they ever get fixed in the Tapestry API response mappings
+               const textProp = item.content.properties?.find((p: any) => p.key === 'text')
+               const subnetProp = item.content.properties?.find((p: any) => p.key === 'subnet')
+               const imageProp = item.content.properties?.find((p: any) => p.key === 'imageUrl')
+               
+               if (!contentText) contentText = textProp?.value || 'No content'
+               subnetValue = subnetProp ? subnetProp.value : ''
+               imageUrlValue = imageProp ? imageProp.value : undefined
+            }
 
               return {
                 id: item.content.id,
                 author: {
                   username: item.authorProfile.username,
-                  walletAddress: item.authorProfile.id, // Tapestry currently uses wallet id as fallback if no real wallet provided in post schema
+                  walletAddress: item.authorProfile.id,
                 },
-                content: item.content.text || textProp?.value || 'No content',
-                subnet: subnetProp ? subnetProp.value : '',
+                content: contentText || 'No content',
+                subnet: subnetValue,
+                imageUrl: imageUrlValue,
                 likesCount: item.socialCounts?.likeCount || 0,
                 commentsCount: item.socialCounts?.commentCount || 0,
                 createdAt: new Date(item.content.created_at).toISOString(),
+                isLiked: item.requestingProfileSocialInfo?.hasLiked || false,
               }
             })
-            
-            // Filter out empty posts without text and sort newest first
-            const validPosts = tapestryPosts
-              .filter(p => p.content !== 'No content')
-              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            
-            if (validPosts.length > 0) {
-              setPosts(validPosts)
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching global feed:', error)
-        } finally {
-          setIsLoadingFeed(false)
+          
+          // Filter out empty posts without text and sort newest first
+          const validPosts = tapestryPosts
+            .filter(p => p.content !== 'No content')
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          
+          setPosts(validPosts)
         }
+      } catch (error) {
+        console.error('Error fetching global feed:', error)
+        setPosts([])
+      } finally {
+        setIsLoadingFeed(false)
       }
-      fetchGlobalFeed()
     } else {
+      // Handle 'following' feed logic here if implemented
+      setPosts([]) // Clear posts for 'following' if not implemented
       setIsLoadingFeed(false)
     }
   }, [feedType])
 
-  const handlePostSubmit = async (content: string, subnet: string) => {
-    if (!connected || !publicKey) return
-    setIsSubmitting(true)
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts])
 
+  const handleCreatePost = async (content: string, subnet: string, imageUrl?: string) => {
+    if (!connected || !publicKey) return
+
+    setIsSubmitting(true)
     try {
-      const response = await fetch('/api/contents/create', {
+      // Basic post props
+      const properties: { key: string; value: string }[] = []
+      if (subnet) {
+        properties.push({ key: 'subnet', value: subnet })
+      }
+      
+      // Attach Image ID if provided
+      if (imageUrl && imageUrl.trim() !== '') {
+        properties.push({ key: 'imageUrl', value: imageUrl.trim() })
+      }
+
+      const res = await fetch('/api/contents/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content,
-          subnet,
           ownerWalletAddress: publicKey.toBase58(),
-        }),
+          content,
+          properties
+        })
       })
 
-      if (!response.ok) {
+      if (!res.ok) {
         throw new Error('Failed to create post')
       }
 
-      // Add to local state for instant feedback
-      const newPost: PostProps = {
-        id: Math.random().toString(),
-        author: {
-          username: 'You',
-          walletAddress: publicKey.toBase58(),
-        },
-        content,
-        subnet,
-        likesCount: 0,
-        commentsCount: 0,
-        createdAt: new Date().toISOString()
-      }
-      setPosts([newPost, ...posts])
+      await fetchPosts()
     } catch (error) {
       console.error(error)
       alert("Failed to create post")
@@ -150,7 +181,7 @@ export default function HomeFeedPage() {
       <aside className="hidden lg:flex w-64 flex-col fixed h-screen pt-4 border-r border-zinc-800 px-4">
         <h2 className="text-xl font-bold mb-6 text-zinc-100 px-2">Feeds</h2>
         <nav className="flex flex-col gap-2">
-          <button 
+          <button
             onClick={() => setFeedType('global')}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${feedType === 'global' ? 'bg-indigo-600 shadow-indigo-500/20 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'}`}
           >
@@ -203,7 +234,7 @@ export default function HomeFeedPage() {
           </button>
         </header>
 
-        <CreatePost onSubmit={handlePostSubmit} isLoading={isSubmitting} />
+        <CreatePost onSubmit={handleCreatePost} isLoading={isSubmitting} />
         
         <div className="mt-8">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const { content, subnet, ownerWalletAddress } = await req.json()
+    const { content, ownerWalletAddress, properties = [] } = await req.json()
 
     if (!content || !ownerWalletAddress) {
       return NextResponse.json(
@@ -12,13 +12,20 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const properties: { key: string; value: string | boolean | number }[] = [
-      { key: 'text', value: content },
-    ]
-
-    if (subnet) {
-      properties.push({ key: 'subnet', value: subnet })
+    // Tapestry drops custom properties on read operations, so we embed them safely inside the text.
+    let richContent = content;
+    const subnetObj = properties.find((p: any) => p.key === 'subnet');
+    const imageUrlObj = properties.find((p: any) => p.key === 'imageUrl');
+    
+    if (subnetObj || imageUrlObj) {
+        richContent += "\n\n|TAPESTRY_META|";
+        if (subnetObj) richContent += `subnet=${subnetObj.value}|`;
+        if (imageUrlObj) richContent += `imageUrl=${imageUrlObj.value}|`;
     }
+
+    const mergedProperties: { key: string; value: string | boolean | number }[] = [
+      { key: 'text', value: richContent },
+    ]
 
     // 1. Resolve actual Tapestry Profile ID from Wallet Address
     let profileId = ownerWalletAddress
@@ -60,7 +67,7 @@ export async function POST(req: NextRequest) {
       {
         id: contentId,
         profileId,
-        properties,
+        properties: mergedProperties,
       },
     )
 

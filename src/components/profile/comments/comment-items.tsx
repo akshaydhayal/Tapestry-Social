@@ -43,7 +43,36 @@ export function CommentItem({
       </div>
 
       <div>
-        <p>{comment.comment.text}</p>
+        {(() => {
+          let text = comment.comment.text || ''
+          let imageUrlValue: string | undefined = undefined
+          
+          if (text.includes('|TAPESTRY_META|')) {
+            const parts = text.split('|TAPESTRY_META|')
+            text = parts[0].trim()
+            const meta = parts[1]
+            const imgMatch = meta.match(/imageUrl=([^|]+)/)
+            if (imgMatch) imageUrlValue = imgMatch[1]
+          }
+
+          return (
+            <>
+              <p className="text-zinc-200">{text}</p>
+              {imageUrlValue && (
+                <div className="mt-4 relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950/50">
+                  <img 
+                    src={imageUrlValue} 
+                    alt="Comment attachment" 
+                    className="w-full h-auto max-h-[400px] object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
+                </div>
+              )}
+            </>
+          )
+        })()}
       </div>
 
       {comment.requestingProfileSocialInfo && comment.socialCounts && (

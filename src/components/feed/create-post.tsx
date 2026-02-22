@@ -12,18 +12,26 @@ export function CreatePost({
   onSubmit,
   isLoading
 }: {
-  onSubmit: (content: string, subnet: string) => void
+  onSubmit: (content: string, subnet: string, imageUrl?: string) => void
   isLoading?: boolean
 }) {
   const [content, setContent] = useState('')
   const [subnet, setSubnet] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [showImageInput, setShowImageInput] = useState(false)
   const { connected } = useWallet()
 
   const handleSubmit = () => {
     if (!content.trim() || !connected) return
-    onSubmit(content, subnet.startsWith('#') ? subnet : subnet ? `#${subnet}` : '')
+    onSubmit(
+      content, 
+      subnet.startsWith('#') ? subnet : subnet ? `#${subnet}` : '',
+      imageUrl
+    )
     setContent('')
     setSubnet('')
+    setImageUrl('')
+    setShowImageInput(false)
   }
 
   return (
@@ -50,12 +58,40 @@ export function CreatePost({
             </span>
           </div>
         )}
+
+        {showImageInput && (
+          <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
+            <input 
+              type="text" 
+              placeholder="Paste Image URL here..." 
+              className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-blue-500/50 transition-colors"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              disabled={!connected || isLoading}
+            />
+            {imageUrl && (
+              <div className="mt-2 relative rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950/50 h-32 flex items-center justify-center">
+                <img 
+                  src={imageUrl} 
+                  alt="Preview" 
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                  onLoad={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'block';
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="px-4 py-3 flex items-center justify-between border-t border-zinc-900 bg-zinc-950/80">
         <div className="flex items-center gap-2">
           <div className="relative group">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-purple-400 hover:bg-zinc-900 rounded-full transition-colors">
+            <Button variant="ghost" className="h-8 w-8 p-0 text-zinc-500 hover:text-purple-400 hover:bg-zinc-900 rounded-full transition-colors flex items-center justify-center">
               <Hash className="h-4 w-4" />
             </Button>
             {/* Simple popup for inputting subnet */}
@@ -71,7 +107,11 @@ export function CreatePost({
             </div>
           </div>
           
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-blue-400 hover:bg-zinc-900 rounded-full transition-colors">
+          <Button 
+            variant="ghost" 
+            onClick={() => setShowImageInput(!showImageInput)}
+            className={`h-8 w-8 p-0 rounded-full transition-colors flex items-center justify-center ${showImageInput || imageUrl ? 'text-blue-400 bg-blue-500/10' : 'text-zinc-500 hover:text-blue-400 hover:bg-zinc-900'}`}
+          >
             <ImageIcon className="h-4 w-4" />
           </Button>
         </div>

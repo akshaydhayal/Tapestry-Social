@@ -23,6 +23,36 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
         if (!postRes.ok) throw new Error('Failed to fetch post')
         const postData = await postRes.json()
 
+        let contentText = postData.content.text || '';
+        let subnetValue = '';
+        let imageUrlValue: string | undefined = undefined;
+        
+        if (contentText.includes('|TAPESTRY_META|')) {
+            const parts = contentText.split('|TAPESTRY_META|');
+            contentText = parts[0].trim();
+            const meta = parts[1];
+            
+            const subnetMatch = meta.match(/subnet=([^|]+)/);
+            if (subnetMatch) subnetValue = subnetMatch[1];
+            
+            const imgMatch = meta.match(/imageUrl=([^|]+)/);
+            if (imgMatch) imageUrlValue = imgMatch[1];
+        }
+
+        // Check for top-level imageUrl returned by Tapestry API
+        if (!imageUrlValue && postData.content.imageUrl) {
+            imageUrlValue = postData.content.imageUrl;
+        }
+
+        if (!imageUrlValue && !contentText.includes('|TAPESTRY_META|')) {
+           const textProp = postData.content.properties?.find((p: any) => p.key === 'text');
+           const subnetProp = postData.content.properties?.find((p: any) => p.key === 'subnet');
+           const imageProp = postData.content.properties?.find((p: any) => p.key === 'imageUrl');
+           if (!contentText) contentText = textProp?.value || 'No content';
+           subnetValue = subnetProp ? subnetProp.value : '';
+           imageUrlValue = imageProp ? imageProp.value : undefined;
+        }
+
         const formattedPost: PostProps = {
           id: postData.content.id,
           author: {
@@ -30,8 +60,9 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
             avatarUrl: postData.author?.image || '',
             walletAddress: postData.author?.id || 'Unknown',
           },
-          content: postData.content.text,
-          subnet: postData.content.properties?.find((p: any) => p.key === 'subnet')?.value,
+          content: contentText || 'No content',
+          subnet: subnetValue,
+          imageUrl: imageUrlValue,
           likesCount: postData.socialCounts.likeCount || 0,
           commentsCount: postData.socialCounts.commentCount || 0,
           createdAt: new Date(postData.content.created_at * 1000).toISOString(),

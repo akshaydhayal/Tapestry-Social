@@ -3,29 +3,12 @@
 import { Feed } from '@/components/feed/feed'
 import { CreatePost } from '@/components/feed/create-post'
 import { PostProps } from '@/components/feed/post-card'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { ArrowLeft, LockKeyhole } from 'lucide-react'
+import { ArrowLeft, LockKeyhole, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
-// Dummy data specific to a subnet
-const generateDummyPosts = (subnet: string): PostProps[] => [
-  {
-    id: '1',
-    author: {
-      username: 'SubnetCreator',
-      walletAddress: 'Zz999999999999999999999999999999999999999',
-    },
-    content: `Welcome to the official #${subnet} subnet! 🚀 Let's start building and sharing.`,
-    subnet: `#${subnet}`,
-    likesCount: 12,
-    commentsCount: 2,
-    createdAt: new Date().toISOString()
-  }
-]
-
-// Mock FairScale configurations
 const SUBNET_GATES: Record<string, { minScore: number, desc: string }> = {
   'SolanaDevs': { minScore: 100, desc: 'Requires FairScore > 100 to prove developer activity.' },
   'NFTWhales': { minScore: 500, desc: 'Requires FairScore > 500 or specific NFT holdings.' },
@@ -37,10 +20,80 @@ export default function SubnetPage() {
   const subnet = typeof params.subnet === 'string' ? params.subnet : 'unknown'
   const [posts, setPosts] = useState<PostProps[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { connected, publicKey } = useWallet()
   
   // Mock user's FairScore
   const [userScore, setUserScore] = useState<number | null>(null)
+
+  const fetchPosts = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/contents/feed')
+      if (!res.ok) throw new Error('Failed to fetch feed')
+      
+      const data = await res.json()
+      if (data && data.contents) {
+        const tapestryPosts: PostProps[] = data.contents.map((item: any) => {
+          let contentText = item.content.text || '';
+          let subnetValue = '';
+          let imageUrlValue: string | undefined = undefined;
+          
+          if (contentText.includes('|TAPESTRY_META|')) {
+              const parts = contentText.split('|TAPESTRY_META|');
+              contentText = parts[0].trim();
+              const meta = parts[1];
+              
+              const subnetMatch = meta.match(/subnet=([^|]+)/);
+              if (subnetMatch) subnetValue = subnetMatch[1];
+              
+              const imgMatch = meta.match(/imageUrl=([^|]+)/);
+              if (imgMatch) imageUrlValue = imgMatch[1];
+          }
+
+          // Check for top-level imageUrl returned by Tapestry API
+          if (!imageUrlValue && item.content.imageUrl) {
+              imageUrlValue = item.content.imageUrl;
+          }
+
+          if (!imageUrlValue && !contentText.includes('|TAPESTRY_META|')) {
+             const textProp = item.content.properties?.find((p: any) => p.key === 'text')
+             const subnetProp = item.content.properties?.find((p: any) => p.key === 'subnet')
+             const imageProp = item.content.properties?.find((p: any) => p.key === 'imageUrl')
+             if (!contentText) contentText = textProp?.value || 'No content'
+             subnetValue = subnetProp ? subnetProp.value : ''
+             imageUrlValue = imageProp ? imageProp.value : undefined
+          }
+
+          return {
+            id: item.content.id,
+            author: {
+              username: item.authorProfile.username,
+              walletAddress: item.authorProfile.id,
+            },
+            content: contentText || 'No content',
+            subnet: subnetValue,
+            imageUrl: imageUrlValue,
+            likesCount: item.socialCounts?.likeCount || 0,
+            commentsCount: item.socialCounts?.commentCount || 0,
+            createdAt: new Date(item.content.created_at).toISOString(),
+            isLiked: item.requestingProfileSocialInfo?.hasLiked || false,
+          }
+        })
+        
+        // Filter by current subnet
+        const filteredPosts = tapestryPosts
+          .filter(p => p.subnet === `#${subnet}` || p.subnet === subnet)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        
+        setPosts(filteredPosts)
+      }
+    } catch (error) {
+      console.error('Error fetching subnet feed:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [subnet])
   
   useEffect(() => {
     // Determine the criteria
@@ -48,34 +101,42 @@ export default function SubnetPage() {
     
     // Simulate fetching the FairScale score when authenticated
     if (connected) {
-      // Mock score of 842 for demonstration (allows access to all)
-      // In a real app, you would fetch from FairScale API here
       setTimeout(() => setUserScore(842), 500)
     } else {
       setUserScore(null)
     }
-    
-    // Load posts if public or if we have a score that passes
+  }, [subnet, connected])
+
+  useEffect(() => {
+    const criteria = SUBNET_GATES[subnet] || { minScore: 0, desc: 'Open to everyone.' }
     if (criteria.minScore === 0 || (userScore !== null && userScore >= criteria.minScore)) {
-      setPosts(generateDummyPosts(subnet))
+      fetchPosts()
     }
-  }, [subnet, connected, userScore])
+  }, [fetchPosts, userScore, subnet])
 
   const criteria = SUBNET_GATES[subnet] || { minScore: 0, desc: 'Open to everyone.' }
   const isLocked = criteria.minScore > 0 && (userScore === null || userScore < criteria.minScore)
 
-  const handlePostSubmit = async (content: string) => {
+  const handlePostSubmit = async (content: string, _subnet: string, imageUrl?: string) => {
     if (!connected || !publicKey) return
     setIsSubmitting(true)
 
     try {
+      const properties: { key: string; value: string }[] = [
+        { key: 'subnet', value: `#${subnet}` }
+      ]
+      
+      if (imageUrl && imageUrl.trim() !== '') {
+        properties.push({ key: 'imageUrl', value: imageUrl.trim() })
+      }
+
       const response = await fetch('/api/contents/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content,
-          subnet: `#${subnet}`,
           ownerWalletAddress: publicKey.toBase58(),
+          content,
+          properties
         }),
       })
 
@@ -91,6 +152,7 @@ export default function SubnetPage() {
         },
         content,
         subnet: `#${subnet}`,
+        imageUrl: imageUrl ? imageUrl.trim() : undefined,
         likesCount: 0,
         commentsCount: 0,
         createdAt: new Date().toISOString()
@@ -143,7 +205,7 @@ export default function SubnetPage() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <CreatePost onSubmit={handlePostSubmit} isLoading={isSubmitting} />
             <div className="mt-8">
-              <Feed posts={posts} />
+              <Feed posts={posts} isLoading={isLoading} />
             </div>
           </div>
         )}

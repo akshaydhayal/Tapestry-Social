@@ -14,6 +14,7 @@ export interface PostProps {
   }
   content: string
   subnet?: string
+  imageUrl?: string
   likesCount: number
   commentsCount: number
   createdAt: string
@@ -139,6 +140,21 @@ export function PostCard({ post }: { post: PostProps }) {
             <div className="text-zinc-300 mt-2 mb-4 leading-relaxed whitespace-pre-wrap text-sm md:text-base">
               {post.content}
             </div>
+
+            {post.imageUrl && (
+              <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-900/50 mt-3 mb-4 shadow-md bg-zinc-950/20">
+                <img 
+                  src={post.imageUrl} 
+                  alt="Post attachment" 
+                  className="w-full h-auto max-h-[500px] object-cover hover:scale-[1.02] transition-transform duration-500 ease-in-out"
+                  onError={(e) => {
+                    // Try to hide broken images completely
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                  }}
+                />
+              </div>
+            )}
 
             <div className="flex items-center gap-6 mt-4 pt-4 border-t border-zinc-900/50">
               <button 
