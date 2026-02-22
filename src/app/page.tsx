@@ -3,9 +3,9 @@
 import { Feed } from '@/components/feed/feed'
 import { CreatePost } from '@/components/feed/create-post'
 import { PostProps } from '@/components/feed/post-card'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { Globe, Users } from 'lucide-react'
+import { Globe, Users, Loader2 } from 'lucide-react'
 
 // Dummy data for visual presentation before Tapestry integration
 const initialDummyPosts: PostProps[] = [
@@ -48,10 +48,60 @@ const initialDummyPosts: PostProps[] = [
 ]
 
 export default function HomeFeedPage() {
-  const [posts, setPosts] = useState<PostProps[]>(initialDummyPosts)
+  const [posts, setPosts] = useState<PostProps[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingFeed, setIsLoadingFeed] = useState(true)
   const [feedType, setFeedType] = useState<'following' | 'global'>('global')
   const { connected, publicKey } = useWallet()
+
+  useEffect(() => {
+    if (feedType === 'global') {
+      setIsLoadingFeed(true)
+      const fetchGlobalFeed = async () => {
+        try {
+          const res = await fetch('/api/contents/feed')
+          if (!res.ok) throw new Error('Failed to fetch feed')
+          
+          const data = await res.json()
+          if (data && data.contents) {
+            const tapestryPosts: PostProps[] = data.contents.map((item: any) => {
+              const textProp = item.content.properties?.find((p: any) => p.key === 'text')
+              const subnetProp = item.content.properties?.find((p: any) => p.key === 'subnet')
+
+              return {
+                id: item.content.id,
+                author: {
+                  username: item.authorProfile.username,
+                  walletAddress: item.authorProfile.id, // Tapestry currently uses wallet id as fallback if no real wallet provided in post schema
+                },
+                content: item.content.text || textProp?.value || 'No content',
+                subnet: subnetProp ? subnetProp.value : '',
+                likesCount: item.socialCounts?.likeCount || 0,
+                commentsCount: item.socialCounts?.commentCount || 0,
+                createdAt: new Date(item.content.created_at).toISOString(),
+              }
+            })
+            
+            // Filter out empty posts without text and sort newest first
+            const validPosts = tapestryPosts
+              .filter(p => p.content !== 'No content')
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            
+            if (validPosts.length > 0) {
+              setPosts(validPosts)
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching global feed:', error)
+        } finally {
+          setIsLoadingFeed(false)
+        }
+      }
+      fetchGlobalFeed()
+    } else {
+      setIsLoadingFeed(false)
+    }
+  }, [feedType])
 
   const handlePostSubmit = async (content: string, subnet: string) => {
     if (!connected || !publicKey) return
@@ -159,7 +209,13 @@ export default function HomeFeedPage() {
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
             {feedType === 'global' ? '🌎 Global Feed' : '👥 Following'}
           </h2>
-          <Feed posts={posts} />
+          {isLoadingFeed ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 text-indigo-500 animate-spin" />
+            </div>
+          ) : (
+            <Feed posts={posts} />
+          )}
         </div>
       </main>
 
