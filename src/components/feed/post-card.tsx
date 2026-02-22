@@ -20,7 +20,82 @@ export interface PostProps {
   onLike?: () => void
 }
 
+import { useState } from 'react'
+import { useProfileStore } from '@/store/profile'
+
 export function PostCard({ post }: { post: PostProps }) {
+  const { mainUsername } = useProfileStore()
+  
+  const [isLiked, setIsLiked] = useState<boolean>(!!post.isLiked)
+  const [likesCount, setLikesCount] = useState<number>(post.likesCount)
+  const [isLiking, setIsLiking] = useState(false)
+
+  const [commentsCount, setCommentsCount] = useState<number>(post.commentsCount)
+  const [showCommentBox, setShowCommentBox] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [isCommenting, setIsCommenting] = useState(false)
+
+  const handleLike = async () => {
+    if (!mainUsername || isLiking) return
+
+    setIsLiking(true)
+    const previousIsLiked = isLiked
+    const previousLikesCount = likesCount
+
+    // Optimistic Update
+    setIsLiked(!isLiked)
+    setLikesCount(prev => isLiked ? prev - 1 : prev + 1)
+
+    try {
+      const method = previousIsLiked ? 'DELETE' : 'POST'
+      const url = previousIsLiked 
+        ? `/api/contents/like?nodeId=${post.id}&profileId=${mainUsername}`
+        : '/api/contents/like'
+        
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: previousIsLiked ? undefined : JSON.stringify({ nodeId: post.id, profileId: mainUsername })
+      })
+
+      if (!res.ok) throw new Error('Failed to toggle like')
+    } catch (error) {
+      console.error(error)
+      // Revert optimistic update
+      setIsLiked(previousIsLiked)
+      setLikesCount(previousLikesCount)
+    } finally {
+      setIsLiking(false)
+    }
+  }
+
+  const handleComment = async () => {
+    if (!mainUsername || !commentText.trim() || isCommenting) return
+
+    setIsCommenting(true)
+    try {
+      const res = await fetch('/api/contents/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contentId: post.id,
+          profileId: mainUsername,
+          text: commentText
+        })
+      })
+
+      if (!res.ok) throw new Error('Failed to post comment')
+      
+      setCommentsCount(prev => prev + 1)
+      setCommentText('')
+      setShowCommentBox(false)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsCommenting(false)
+    }
+  }
+
   return (
     <Card className="bg-zinc-950/50 backdrop-blur-md border-zinc-800/80 hover:border-zinc-700 transition-colors mb-4 rounded-xl overflow-hidden shadow-lg shadow-black/20">
       <CardContent className="p-5">
@@ -59,22 +134,46 @@ export function PostCard({ post }: { post: PostProps }) {
 
             <div className="flex items-center gap-6 mt-4 pt-4 border-t border-zinc-900/50">
               <button 
-                onClick={post.onLike}
-                className={`flex items-center gap-2 text-sm transition-colors ${post.isLiked ? 'text-pink-500' : 'text-zinc-500 hover:text-pink-400'}`}
+                onClick={handleLike}
+                disabled={isLiking}
+                className={`flex items-center gap-2 text-sm transition-colors ${isLiked ? 'text-pink-500' : 'text-zinc-500 hover:text-pink-400'}`}
               >
-                <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
-                <span>{post.likesCount}</span>
+                <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+                <span>{likesCount}</span>
               </button>
               
-              <button className="flex items-center gap-2 text-sm text-zinc-500 hover:text-blue-400 transition-colors">
+              <button 
+                onClick={() => setShowCommentBox(!showCommentBox)}
+                className="flex items-center gap-2 text-sm text-zinc-500 hover:text-blue-400 transition-colors"
+              >
                 <MessageCircle className="h-4 w-4" />
-                <span>{post.commentsCount}</span>
+                <span>{commentsCount}</span>
               </button>
 
               <button className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors ml-auto">
                 <Share2 className="h-4 w-4" />
               </button>
             </div>
+
+            {showCommentBox && (
+              <div className="mt-4 flex gap-2 w-full">
+                <input
+                  type="text"
+                  placeholder="Write a comment..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="flex-1 bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+                />
+                <button
+                  onClick={handleComment}
+                  disabled={isCommenting || !commentText.trim()}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50"
+                >
+                  {isCommenting ? '...' : 'Reply'}
+                </button>
+              </div>
+            )}
+            
           </div>
         </div>
       </CardContent>
