@@ -23,10 +23,11 @@ import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
 import { CreateProfileContainer } from '../create-profile/create-profile-container'
 import { DialectNotificationComponent } from '../notifications/dialect-notifications-component'
+import { useProfileStore } from '@/store/profile'
 
 export function Header() {
   const { walletAddress } = useCurrentWallet()
-  const [mainUsername, setMainUsername] = useState<string | null>(null)
+  const { mainUsername, profileImage, setProfileData } = useProfileStore()
   const [isProfileCreated, setIsProfileCreated] = useState<boolean>(false)
   const [profileUsername, setProfileUsername] = useState<string | null>(null)
   const { profiles } = useGetProfiles({
@@ -63,15 +64,15 @@ export function Header() {
 
   useEffect(() => {
     if (profiles && profiles.length) {
-      setMainUsername(profiles[0].profile.username)
+      setProfileData(profiles[0].profile.username, profiles[0].profile.image || null)
     }
 
     if (isProfileCreated && profileUsername) {
-      setMainUsername(profileUsername)
+      setProfileData(profileUsername, null)
       setIsProfileCreated(false)
       setProfileUsername(null)
     }
-  }, [profiles, isProfileCreated, profileUsername])
+  }, [profiles, isProfileCreated, profileUsername, setProfileData])
 
   return (
     <>
@@ -81,7 +82,7 @@ export function Header() {
             href="/" 
             className="hover:opacity-80"
           >
-            <h1 className="text-2xl font-bold">Solana Starter Kit Template</h1>
+            <h1 className="text-2xl font-bold">Tapestry Reddit</h1>
           </Link>
 
           <nav className="flex items-center space-x-8">
@@ -110,7 +111,18 @@ export function Header() {
                     onClick={() => router.push(`/${mainUsername}`)}
                     className="space-x-2"
                   >
-                    <User size={16} />
+                    {profileImage ? (
+                      <Image
+                        src={profileImage}
+                        width={24}
+                        height={24}
+                        alt="avatar"
+                        className="object-cover rounded-full"
+                        unoptimized
+                      />
+                    ) : (
+                      <User size={16} />
+                    )}
                     <p className="truncate font-bold">{mainUsername}</p>
                   </Button>
                 ) : (
@@ -127,19 +139,6 @@ export function Header() {
 
             <div className="flex items-center gap-2">
               <DialectNotificationComponent />
-              <Link
-                href="https://github.com/Primitives-xyz/solana-starter-kit"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-80 flex items-center"
-              >
-                <Image
-                  width={20}
-                  height={20}
-                  alt="Github link"
-                  src="/logos/github-mark.svg"
-                />
-              </Link>
             </div>
           </nav>
         </div>

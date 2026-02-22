@@ -10,11 +10,15 @@ export async function GET(req: Request) {
   }
 
   try {
-    const response = await socialfi.profiles.profilesDetail({
-      apiKey: process.env.TAPESTRY_API_KEY || '',
-      id: username,
-    })
+    const url = `https://api.usetapestry.dev/api/v1/profiles/${username}?apiKey=${process.env.TAPESTRY_API_KEY || ''}`
+    const res = await fetch(url)
 
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(`Profile fetch failed: ${res.status} ${res.statusText} - ${errorText}`)
+    }
+
+    const response = await res.json()
     return NextResponse.json(response)
   } catch (error: any) {
     console.error('Error fetching profiles:', error)
@@ -35,14 +39,21 @@ export async function PUT(req: Request) {
   }
 
   try {
-    const response = await socialfi.profiles.profilesUpdate(
-      {
-        apiKey: process.env.TAPESTRY_API_KEY || '',
-        id: username,
+    const url = `https://api.usetapestry.dev/api/v1/profiles/${username}?apiKey=${process.env.TAPESTRY_API_KEY || ''}`
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      body,
-    )
+      body: JSON.stringify(body),
+    })
 
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(`Profile update failed: ${res.status} ${res.statusText} - ${errorText}`)
+    }
+
+    const response = await res.json()
     return NextResponse.json(response)
   } catch (error: any) {
     console.error('Error updating profile:', error)

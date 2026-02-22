@@ -5,7 +5,9 @@ import { Button } from '@/components/common/button'
 import { useUpdateProfileInfo } from '@/components/profile/hooks/use-update-profile'
 import { IProfileResponse } from '@/models/profile.models'
 import { Pencil } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useProfileStore } from '@/store/profile'
 
 interface Props {
   username: string
@@ -13,32 +15,73 @@ interface Props {
   refetch: () => void
 }
 
-export function Bio({ username, data, refetch }: Props) {
-  const { updateProfile, loading } = useUpdateProfileInfo({ username })
+export function Bio({ username: pathUsername, data, refetch }: Props) {
+  const { updateProfile, loading } = useUpdateProfileInfo({ username: pathUsername })
   const [bio, setBio] = useState(data?.profile?.bio || '')
+  const [editUsername, setEditUsername] = useState(data?.profile?.username || pathUsername || '')
+  const [image, setImage] = useState(data?.profile?.image || '')
   const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (data?.profile) {
+      setBio(data.profile.bio || '')
+      setEditUsername(data.profile.username || pathUsername || '')
+      setImage(data.profile.image || '')
+    }
+  }, [data, pathUsername])
 
   const { mainUsername } = useCurrentWallet()
+  const { setProfileData } = useProfileStore()
 
-  const handleSaveBio = async () => {
-    await updateProfile({ bio })
+  const handleSaveProfile = async () => {
+    await updateProfile({ bio, username: editUsername, image })
     refetch()
+    setProfileData(editUsername, image)
     setIsEditing(false)
+    
+    // If username changed, we might need to redirect to the new url
+    if (editUsername !== pathUsername && editUsername.trim() !== '') {
+      router.push(`/${editUsername}`)
+    }
   }
 
   return (
     <div className="mt-4">
-      {mainUsername === username ? (
+      {mainUsername === pathUsername ? (
         isEditing ? (
-          <div className="flex flex-col items-center space-y-2">
-            <input
-              type="text"
-              className="border-b border-muted-light p-2 w-full outline-0"
-              value={bio}
-              placeholder="Enter your bio"
-              onChange={(e) => setBio(e.target.value)}
-            />
-            <div className="w-full flex items-center justify-end space-x-4">
+          <div className="flex flex-col space-y-4">
+            <div>
+              <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Username</label>
+              <input
+                type="text"
+                className="border-b border-muted-light p-2 w-full outline-0 bg-transparent text-white"
+                value={editUsername}
+                placeholder="Enter your username"
+                onChange={(e) => setEditUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Profile Image URL</label>
+              <input
+                type="text"
+                className="border-b border-muted-light p-2 w-full outline-0 bg-transparent text-white"
+                value={image}
+                placeholder="Enter image URL"
+                onChange={(e) => setImage(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Bio</label>
+              <input
+                type="text"
+                className="border-b border-muted-light p-2 w-full outline-0 bg-transparent text-white"
+                value={bio}
+                placeholder="Enter your bio"
+                onChange={(e) => setBio(e.target.value)}
+              />
+            </div>
+            <div className="w-full flex items-center justify-end space-x-4 pt-2">
               <Button
                 className="!w-20 justify-center"
                 onClick={() => setIsEditing(false)}
@@ -49,7 +92,7 @@ export function Bio({ username, data, refetch }: Props) {
                 className="!w-20 justify-center"
                 type="submit"
                 variant="secondary"
-                onClick={handleSaveBio}
+                onClick={handleSaveProfile}
                 disabled={loading}
               >
                 {loading ? '. . .' : 'Save'}
@@ -57,16 +100,19 @@ export function Bio({ username, data, refetch }: Props) {
             </div>
           </div>
         ) : (
-          <div>
-            <span className="flex items-center space-x-2">
-              <p>Bio</p>
-              <Button onClick={() => setIsEditing(true)} variant="ghost">
-                <Pencil size={16} />
+          <div className="flex flex-col gap-4 mt-2">
+            <div>
+              <p className="text-sm text-zinc-500 uppercase tracking-wider font-semibold mb-1">Bio</p>
+              <p className="text-zinc-300">
+                {data?.profile?.bio ? data?.profile?.bio : 'No bio provided'}
+              </p>
+            </div>
+            <div className="pt-2">
+              <Button onClick={() => setIsEditing(true)} variant="secondary" className="w-full sm:w-auto">
+                <Pencil size={16} className="mr-2" />
+                Edit Profile
               </Button>
-            </span>
-            <p className="text-gray">
-              {data?.profile?.bio ? data?.profile?.bio : 'no bio'}
-            </p>
+            </div>
           </div>
         )
       ) : (
