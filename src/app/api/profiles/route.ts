@@ -4,16 +4,20 @@ import { type NextRequest, NextResponse } from 'next/server'
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const walletAddress = searchParams.get('walletAddress')
+  const usernameQuery = searchParams.get('username')
 
-  if (!walletAddress) {
+  if (!walletAddress && !usernameQuery) {
     return NextResponse.json(
-      { error: 'walletAddress is required' },
+      { error: 'walletAddress or username is required' },
       { status: 400 },
     )
   }
 
   try {
-    const url = `https://api.usetapestry.dev/api/v1/profiles?walletAddress=${walletAddress}&apiKey=${process.env.TAPESTRY_API_KEY || ''}`
+    const queryParam = walletAddress 
+      ? `walletAddress=${walletAddress}` 
+      : `username=${usernameQuery}`
+    const url = `https://api.usetapestry.dev/api/v1/profiles?${queryParam}&apiKey=${process.env.TAPESTRY_API_KEY || ''}`
     
     const res = await fetch(url)
     

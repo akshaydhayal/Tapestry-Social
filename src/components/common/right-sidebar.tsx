@@ -2,32 +2,90 @@
 
 import { useState, useEffect } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { Search } from 'lucide-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { WhoToFollow } from '@/components/feed/who-to-follow'
+import { useRouter } from 'next/navigation'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
+import { useProfileStore } from '@/store/profile'
+import { useGetProfiles } from '../auth/hooks/use-get-profiles'
+import { Button } from './button'
+import { User } from 'lucide-react'
+import Image from 'next/image'
+import { CreateProfileContainer } from '../create-profile/create-profile-container'
 
 export function RightSidebar() {
-  const [mounted, setMounted] = useState(false)
+  const { walletAddress } = useCurrentWallet()
+  const { mainUsername, profileImage, setProfileData } = useProfileStore()
+  const [isProfileCreated, setIsProfileCreated] = useState<boolean>(false)
+  const [profileUsername, setProfileUsername] = useState<string | null>(null)
+  const { profiles } = useGetProfiles({
+    walletAddress: walletAddress || '',
+  })
   const { connected } = useWallet()
+  const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (profiles && profiles.length) {
+      setProfileData(profiles[0].profile.username, profiles[0].profile.image || null)
+    }
+
+    if (isProfileCreated && profileUsername) {
+      setProfileData(profileUsername, null)
+      setIsProfileCreated(false)
+      setProfileUsername(null)
+    }
+  }, [profiles, isProfileCreated, profileUsername, setProfileData])
+
   return (
     <aside className="hidden lg:block w-[350px] pl-8 pt-2 h-screen sticky top-0">
       
-      {/* Search Bar */}
-      <div className="sticky top-0 bg-black pt-1 pb-3 z-10 w-full mb-2">
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-[#1d9aef] transition-colors">
-            <Search className="h-4 w-4" />
+      {/* Profile & Wallet Header */}
+      <div className="sticky top-0 bg-black pt-1 pb-3 z-10 w-full mb-6 flex items-center gap-2">
+        {mounted && connected && (
+          <div className="flex-shrink-0">
+            {mainUsername ? (
+              <Button
+                variant="ghost"
+                onClick={() => router.push(`/${mainUsername}`)}
+                className="flex items-center gap-2 p-1 pr-3 rounded-full hover:bg-zinc-900 transition-colors h-12"
+              >
+                {profileImage ? (
+                  <Image
+                    src={profileImage}
+                    width={36}
+                    height={36}
+                    alt="avatar"
+                    className="object-cover rounded-full min-w-[36px] h-[36px]"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="min-w-[36px] h-[36px] bg-indigo-500 rounded-full flex items-center justify-center text-white">
+                    <User size={18} />
+                  </div>
+                )}
+                <div className="flex flex-col items-start min-w-0 max-w-[80px]">
+                  <span className="font-bold text-xs truncate w-full text-white">{mainUsername}</span>
+                </div>
+              </Button>
+            ) : (
+              <div className="flex items-center h-12 px-2">
+                <CreateProfileContainer
+                  setIsProfileCreated={setIsProfileCreated}
+                  setProfileUsername={setProfileUsername}
+                />
+              </div>
+            )}
           </div>
-          <input 
-            type="text" 
-            placeholder="Search" 
-            className="w-full bg-[#202327] border border-transparent focus:bg-black focus:border-[#1d9aef] rounded-full py-3.5 pl-11 pr-4 text-[15px] text-white placeholder-zinc-500 focus:outline-none transition-all"
-            autoComplete="off"
-          />
+        )}
+        <div className="flex-1">
+          {mounted && (
+            <WalletMultiButton className="!bg-[#1d9aef] hover:!bg-[#1a8cd8] transition-colors !w-full !rounded-full !h-12 flex justify-center text-sm font-bold truncate" />
+          )}
         </div>
       </div>
 

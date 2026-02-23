@@ -1,14 +1,14 @@
 'use client'
 
-import { Comments } from '@/components/profile/comments/comments'
-import { FollowList } from '@/components/profile/follow-list'
 import { MyProfile } from '@/components/profile/my-profile'
-import { DisplaySuggestedAndGlobal } from '@/components/suggested-and-creators-invite/hooks/display-suggested-and-global'
 import { getFollowers, getFollowing } from '@/lib/tapestry'
 import type { IGetSocialResponse } from '@/models/profile.models'
 import { PublicKey } from '@solana/web3.js'
-import { useEffect, useState } from 'react'
-import { PortfolioView } from './portfolio-view'
+import { useEffect, useState, useCallback } from 'react'
+import { RightSidebar } from '@/components/common/right-sidebar'
+import { Feed } from '@/components/feed/feed'
+import { PostProps } from '@/components/feed/post-card'
+import { Loader2 } from 'lucide-react'
 
 interface Props {
   username: string
@@ -19,35 +19,63 @@ export function ProfileContent({ username }: Props) {
   const [followers, setFollowers] = useState<IGetSocialResponse | null>(null)
   const [following, setFollowing] = useState<IGetSocialResponse | null>(null)
   const [profileUsername, setProfileUsername] = useState(username)
-  const [selectedTab, setSelectedTab] = useState<
-    'profile' | 'portfolio' | 'nfts'
-  >('profile')
+  const [profileIds, setProfileIds] = useState<string[]>([])
+  const [posts, setPosts] = useState<PostProps[]>([])
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     async function init() {
+      setPosts([])
+      setProfileIds([])
       setIsLoading(true)
       try {
-        // Check if the input is a valid Solana public key
         let actualUsername = username
 
         try {
-          // If this succeeds, it's a valid public key
           new PublicKey(username)
-
           // Look up profiles for this wallet address
           const profilesResponse = await fetch(
             `/api/profiles?walletAddress=${username}`,
           )
-          const profiles = await profilesResponse.json()
+          const profilesData = await profilesResponse.json()
 
-          // If profiles exist, use the first one's username
-          if (profiles && profiles.length > 0) {
-            actualUsername = profiles[0].username
+          if (profilesData && profilesData.profiles && profilesData.profiles.length > 0) {
+            // Find the exact profile that matches this wallet address
+            const p = profilesData.profiles.find((item: any) => 
+              item.wallet?.address?.toLowerCase() === username.toLowerCase() ||
+              item.profile?.id?.toLowerCase() === username.toLowerCase()
+            ) || profilesData.profiles[0]
+
+            actualUsername = p.profile.username
             setProfileUsername(actualUsername)
+            
+            // Collect unique IDs for filtering (Profile ID and Wallet Address)
+            const ids = [p.profile.id, p.wallet?.address].filter(Boolean)
+            setProfileIds(ids)
           }
         } catch {
           // Not a public key, use as username directly
           actualUsername = username
+          
+          // Fetch profile to get wallet address/profile ID
+          const res = await fetch(`/api/profiles?username=${username}`)
+          const data = await res.json()
+          if (data && data.profiles && data.profiles.length > 0) {
+            // Find the exact profile that matches this username
+            const p = data.profiles.find((item: any) => 
+               item.profile?.username?.toLowerCase() === username.toLowerCase() ||
+               item.profile?.id?.toLowerCase() === username.toLowerCase()
+            ) || data.profiles[0]
+
+            // Collect unique IDs for filtering (Profile ID and Wallet Address)
+            const ids = [p.profile.id, p.wallet?.address].filter(Boolean)
+            setProfileIds(ids)
+          }
         }
 
         // Fetch followers and following
@@ -70,6 +98,74 @@ export function ProfileContent({ username }: Props) {
 
     init()
   }, [username])
+
+  const fetchUserPosts = useCallback(async () => {
+    if (profileIds.length === 0) return
+    
+    setIsLoadingPosts(true)
+    try {
+      // Use the global feed and filter locally by user ID
+      const res = await fetch(`/api/contents/feed?t=${Date.now()}`)
+      if (!res.ok) throw new Error('Failed to fetch user posts')
+      
+      const data = await res.json()
+      if (data && data.contents) {
+        const idSet = new Set(profileIds)
+        // Filter posts to only show this user's posts
+        const userPosts: PostProps[] = data.contents
+          .filter((item: any) => {
+             const authorId = item.authorProfile.id
+             return idSet.has(authorId)
+          })
+          .map((item: any) => {
+            let contentText = item.content.text || '';
+            let subnetValue = '';
+            let imageUrlValue: string | undefined = undefined;
+            
+            if (contentText.includes('|TAPESTRY_META|')) {
+              const parts = contentText.split('|TAPESTRY_META|');
+              contentText = parts[0].trim();
+              const meta = parts[1];
+              const subnetMatch = meta.match(/subnet=([^|]+)/);
+              if (subnetMatch) subnetValue = subnetMatch[1];
+              const imgMatch = meta.match(/imageUrl=([^|]+)/);
+              if (imgMatch) imageUrlValue = imgMatch[1];
+            }
+            
+            if (!imageUrlValue && item.content.imageUrl) {
+              imageUrlValue = item.content.imageUrl;
+            }
+
+            return {
+              id: item.content.id,
+              author: {
+                username: item.authorProfile.username,
+                avatarUrl: item.authorProfile.image,
+                walletAddress: item.authorProfile.id,
+              },
+              content: contentText || 'No content',
+              subnet: subnetValue,
+              imageUrl: imageUrlValue,
+              likesCount: item.socialCounts?.likeCount || 0,
+              commentsCount: item.socialCounts?.commentCount || 0,
+              createdAt: new Date(item.content.created_at).toISOString(),
+              isLiked: item.requestingProfileSocialInfo?.hasLiked || false,
+            }
+          })
+          .sort((a: PostProps, b: PostProps) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        
+        setPosts(userPosts)
+      }
+    } catch (error) {
+      console.error('Error fetching user posts:', error)
+    } finally {
+      setIsLoadingPosts(false)
+    }
+  }, [profileIds, mounted])
+
+  useEffect(() => {
+    fetchUserPosts()
+  }, [fetchUserPosts])
 
   // Add special case handling for the wallet address the user is trying to view
   // Special case handling for specific wallet
@@ -94,121 +190,36 @@ export function ProfileContent({ username }: Props) {
   }
 
   return (
-    <div className="space-y-4">
-      <MyProfile username={profileUsername} />
+    <div className="flex w-full min-h-screen">
+      <main className="flex-1 max-w-[600px] w-full border-x border-zinc-900 pb-20">
+        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-zinc-900 px-4 h-14 flex items-center gap-6">
+          <h1 className="text-xl font-bold text-white truncate">Profile</h1>
+        </header>
 
-      {/* Tabs */}
-      <div className="bg-card rounded-lg p-1 flex">
-        <button
-          type="button"
-          className={`flex-1 py-3 px-4 rounded-md text-center transition-all duration-200 ${
-            selectedTab === 'profile'
-              ? 'button-primary font-medium shadow-lg'
-              : 'text-muted-foreground hover:bg-muted'
-          }`}
-          onClick={() => setSelectedTab('profile')}
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Profile</span>
-          </div>
-        </button>
-        <button
-          type="button"
-          className={`flex-1 py-3 px-4 rounded-md text-center transition-all duration-200 ${
-            selectedTab === 'portfolio'
-              ? 'button-primary font-medium shadow-lg'
-              : 'text-muted-foreground hover:bg-muted'
-          }`}
-          onClick={() => setSelectedTab('portfolio')}
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Tokens</span>
-          </div>
-        </button>
-        <button
-          type="button"
-          className={`flex-1 py-3 px-4 rounded-md text-center transition-all duration-200 ${
-            selectedTab === 'nfts'
-              ? 'button-primary font-medium shadow-lg'
-              : 'text-muted-foreground hover:bg-muted'
-          }`}
-          onClick={() => setSelectedTab('nfts')}
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>NFTs</span>
-          </div>
-        </button>
-      </div>
+        <MyProfile username={profileUsername} />
 
-      {selectedTab === 'profile' ? (
-        <>
-          <div className="flex w-full justify-between space-x-4">
-            <FollowList
-              followers={
-                followers || {
-                  profiles: [],
-                  page: 0,
-                  pageSize: 0,
-                }
-              }
-              following={
-                following || {
-                  profiles: [],
-                  page: 0,
-                  pageSize: 0,
-                }
-              }
-            />
-            <DisplaySuggestedAndGlobal username={profileUsername} />
+        {/* Posts Feed */}
+        <div className="mt-2">
+          <div className="px-4 py-3 border-b border-zinc-900">
+            <h3 className="text-[15px] font-bold text-white relative w-fit">
+              Posts
+              <div className="absolute -bottom-3 left-0 right-0 h-1 bg-[#1d9aef] rounded-full" />
+            </h3>
           </div>
-          <Comments username={profileUsername} />
-        </>
-      ) : (
-        <PortfolioView
-          username={username}
-          initialTokenType={selectedTab === 'nfts' ? 'nft' : 'fungible'}
-        />
-      )}
+          
+          <div className="">
+            {isLoadingPosts ? (
+              <div className="flex justify-center items-center py-12">
+                {mounted && <Loader2 className="h-8 w-8 text-[#1d9aef] animate-spin" />}
+              </div>
+            ) : (
+              <Feed posts={posts} />
+            )}
+          </div>
+        </div>
+      </main>
+
+      <RightSidebar />
     </div>
   )
 }

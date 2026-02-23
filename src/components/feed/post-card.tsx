@@ -107,13 +107,21 @@ export function PostCard({ post }: { post: PostProps }) {
     }
   }
 
+  const handleUserClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    router.push(`/${post.author.username}`)
+  }
+
   return (
     <article 
       onClick={() => router.push(`/post/${post.id}`)}
-      className="border-b border-slate-600 hover:bg-white/[0.03] transition-colors cursor-pointer px-4 pt-3 pb-3 flex gap-3 group"
+      className="border-b border-zinc-900 hover:bg-white/[0.02] transition-colors cursor-pointer px-4 pt-3 pb-3 flex gap-3 group"
     >
-      <div className="flex-shrink-0 pt-1">
-        <Avatar className="h-10 w-10 ring-0">
+      <div 
+        onClick={handleUserClick}
+        className="flex-shrink-0 pt-1"
+      >
+        <Avatar className="h-10 w-10 ring-0 hover:opacity-80 transition-opacity">
           {post.author.avatarUrl ? (
             <Image src={post.author.avatarUrl} alt={post.author.username} fill className="object-cover" />
           ) : (
@@ -127,8 +135,16 @@ export function PostCard({ post }: { post: PostProps }) {
       <div className="flex-1 min-w-0 pb-1">
         <div className="flex items-center justify-between mb-0.5">
           <div className="flex items-center gap-1.5 overflow-hidden">
-            <span className="font-bold text-[15px] text-white hover:underline truncate">{post.author.username}</span>
-            <span className="text-[15px] text-zinc-500 truncate max-w-[120px]">
+            <span 
+              onClick={handleUserClick}
+              className="font-bold text-[15px] text-white hover:underline truncate"
+            >
+              {post.author.username}
+            </span>
+            <span 
+              onClick={handleUserClick}
+              className="text-[15px] text-zinc-500 truncate max-w-[120px]"
+            >
               @{post.author.walletAddress.slice(0,4)}...{post.author.walletAddress.slice(-4)}
             </span>
             <span className="text-[15px] text-zinc-500">·</span>
