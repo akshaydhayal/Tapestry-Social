@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { packFairScore } from '@/utils/fairscore-cache'
 
 export const useCreateProfile = () => {
   const [loading, setLoading] = useState(false)
@@ -26,8 +27,21 @@ export const useCreateProfile = () => {
       const formData = new FormData()
       formData.append('username', username)
       formData.append('ownerWalletAddress', walletAddress)
-      if (bio) {
-        formData.append('bio', bio)
+      
+      let finalBio = bio || ''
+      try {
+        const scoreRes = await fetch(`/api/fairscore?wallet=${walletAddress}`)
+        if (scoreRes.ok) {
+          const scoreData = await scoreRes.json()
+          const score = scoreData.fair_score !== undefined ? scoreData.fair_score : 0
+          finalBio = packFairScore(finalBio, score)
+        }
+      } catch (e) {
+        console.warn('Failed to fetch initial FairScore during profile creation', e)
+      }
+
+      if (finalBio) {
+        formData.append('bio', finalBio)
       }
       if (image) {
         formData.append('image', image)

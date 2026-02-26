@@ -67,16 +67,16 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
         const formattedPost: PostProps = {
           id: postData.content.id,
           author: {
-            username: postData.author?.username || 'Unknown User',
-            avatarUrl: postData.author?.image || '',
-            walletAddress: postData.author?.id || 'Unknown',
+            username: postData.authorProfile?.username || 'Unknown User',
+            avatarUrl: postData.authorProfile?.image || '',
+            walletAddress: postData.authorProfile?.id || 'Unknown',
           },
           content: contentText || 'No content',
           subnet: subnetValue,
           imageUrl: imageUrlValue,
           likesCount: postData.socialCounts.likeCount || 0,
           commentsCount: postData.socialCounts.commentCount || 0,
-          createdAt: new Date(postData.content.created_at * 1000).toISOString(),
+          createdAt: new Date(postData.content.created_at).toISOString(),
           isLiked: postData.requestingProfileSocialInfo?.hasLiked || false,
         }
         setPost(formattedPost)
@@ -97,7 +97,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
           content: c.comment.text,
           likesCount: c.socialCounts?.likeCount || 0,
           commentsCount: 0, 
-          createdAt: new Date(c.comment.created_at * 1000).toISOString(),
+          createdAt: new Date(c.comment.created_at).toISOString(),
           isLiked: c.requestingProfileSocialInfo?.hasLiked || false,
         }))
         

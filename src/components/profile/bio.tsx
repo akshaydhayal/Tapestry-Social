@@ -8,6 +8,7 @@ import { Pencil } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useProfileStore } from '@/store/profile'
+import { extractFairScore, packFairScore, CachedFairScore } from '@/utils/fairscore-cache'
 
 interface Props {
   username: string
@@ -17,7 +18,12 @@ interface Props {
 
 export function Bio({ username: pathUsername, data, refetch }: Props) {
   const { updateProfile, loading } = useUpdateProfileInfo({ username: pathUsername })
-  const [bio, setBio] = useState(data?.profile?.bio || '')
+  
+  // Extract initial bio and score
+  const initialExtraction = extractFairScore(data?.profile?.bio);
+  
+  const [bio, setBio] = useState(initialExtraction.cleanBio)
+  const [cachedScore, setCachedScore] = useState<CachedFairScore | null>(initialExtraction.cachedScore)
   const [editUsername, setEditUsername] = useState(data?.profile?.username || pathUsername || '')
   const [image, setImage] = useState(data?.profile?.image || '')
   const [isEditing, setIsEditing] = useState(false)
@@ -25,7 +31,9 @@ export function Bio({ username: pathUsername, data, refetch }: Props) {
 
   useEffect(() => {
     if (data?.profile) {
-      setBio(data.profile.bio || '')
+      const extraction = extractFairScore(data.profile.bio);
+      setBio(extraction.cleanBio)
+      setCachedScore(extraction.cachedScore)
       setEditUsername(data.profile.username || pathUsername || '')
       setImage(data.profile.image || '')
     }
@@ -35,7 +43,10 @@ export function Bio({ username: pathUsername, data, refetch }: Props) {
   const { setProfileData } = useProfileStore()
 
   const handleSaveProfile = async () => {
-    await updateProfile({ bio, username: editUsername, image })
+    // Re-pack existing score if available
+    const bioToSave = cachedScore ? packFairScore(bio, cachedScore.score) : bio;
+    
+    await updateProfile({ bio: bioToSave, username: editUsername, image })
     refetch()
     setProfileData(editUsername, image)
     setIsEditing(false)
@@ -104,7 +115,7 @@ export function Bio({ username: pathUsername, data, refetch }: Props) {
             <div>
               <p className="text-sm text-zinc-500 uppercase tracking-wider font-semibold mb-1">Bio</p>
               <p className="text-zinc-300">
-                {data?.profile?.bio ? data?.profile?.bio : 'No bio provided'}
+                {bio ? bio : 'No bio provided'}
               </p>
             </div>
             <div className="pt-2">
@@ -119,7 +130,7 @@ export function Bio({ username: pathUsername, data, refetch }: Props) {
         <div>
           <p>Bio</p>
           <p className="text-gray">
-            {data?.profile?.bio ? data?.profile?.bio : 'no bio'}
+            {bio ? bio : 'no bio'}
           </p>
         </div>
       )}

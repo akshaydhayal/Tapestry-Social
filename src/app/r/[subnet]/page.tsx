@@ -8,6 +8,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { ArrowLeft, LockKeyhole, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import { useFairScore } from '@/hooks/use-fairscore'
 
 const SUBNET_GATES: Record<string, { minScore: number, desc: string }> = {
   'SolanaDevs': { minScore: 100, desc: 'Requires FairScore > 100 to prove developer activity.' },
@@ -23,8 +25,13 @@ export default function SubnetPage() {
   const [isLoading, setIsLoading] = useState(true)
   const { connected, publicKey } = useWallet()
   
-  // Mock user's FairScore
-  const [userScore, setUserScore] = useState<number | null>(null)
+  const { profiles } = useGetProfiles({
+    walletAddress: publicKey?.toBase58() || '',
+  })
+  
+  const currentProfileList = profiles && profiles.length > 0 ? profiles[0] : null
+  const { fairScore: userScore, isLoading: isScoreLoading } = useFairScore(currentProfileList)
+
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -101,16 +108,10 @@ export default function SubnetPage() {
   }, [subnet])
   
   useEffect(() => {
+    // The useFairScore hook now handles fetching and caching the score automatically
     // Determine the criteria
     const criteria = SUBNET_GATES[subnet] || { minScore: 0, desc: 'Open to everyone.' }
-    
-    // Simulate fetching the FairScale score when authenticated
-    if (connected) {
-      setTimeout(() => setUserScore(842), 500)
-    } else {
-      setUserScore(null)
-    }
-  }, [subnet, connected])
+  }, [subnet])
 
   useEffect(() => {
     const criteria = SUBNET_GATES[subnet] || { minScore: 0, desc: 'Open to everyone.' }
@@ -202,7 +203,9 @@ export default function SubnetPage() {
             ) : (
               <div className="bg-zinc-900 rounded-xl p-4 inline-block relative z-10 border border-zinc-800">
                 <p className="text-sm text-zinc-500 mb-1">Your Current Score:</p>
-                <p className="text-3xl font-black text-white">{userScore !== null ? userScore : 'Calculating...'}</p>
+                <p className="text-3xl font-black text-white">
+                  {isScoreLoading ? 'Calculating...' : (userScore !== null ? userScore : '0')}
+                </p>
               </div>
             )}
           </div>

@@ -12,6 +12,7 @@ import { Button } from './button'
 import { User } from 'lucide-react'
 import Image from 'next/image'
 import { CreateProfileContainer } from '../create-profile/create-profile-container'
+import { useFairScore } from '@/hooks/use-fairscore'
 
 export function RightSidebar() {
   const { walletAddress } = useCurrentWallet()
@@ -21,8 +22,12 @@ export function RightSidebar() {
   const { profiles } = useGetProfiles({
     walletAddress: walletAddress || '',
   })
-  const { connected } = useWallet()
+  const { connected, publicKey } = useWallet()
   const [mounted, setMounted] = useState(false)
+  
+  const currentProfileList = profiles && profiles.length > 0 ? profiles[0] : null
+  const { fairScore, isLoading: isScoreLoading } = useFairScore(currentProfileList)
+  
   const router = useRouter()
 
   useEffect(() => {
@@ -40,6 +45,9 @@ export function RightSidebar() {
       setProfileUsername(null)
     }
   }, [profiles, isProfileCreated, profileUsername, setProfileData])
+
+  // Calculate percentage for progress bar (cap at 100%, assuming 1000 is a high score)
+  const scorePercentage = fairScore !== null ? Math.min(100, Math.max(0, (fairScore / 1000) * 100)) : 0
 
   return (
     <aside className="hidden lg:block w-[350px] pl-8 pt-2 h-screen sticky top-0">
@@ -96,12 +104,17 @@ export function RightSidebar() {
           {mounted && connected ? (
             <div className="flex flex-col gap-4">
               <div className="flex items-end gap-2">
-                <span className="text-3xl font-black text-white">842</span>
+                <span className="text-3xl font-black text-white">
+                  {isScoreLoading ? '...' : (fairScore !== null ? fairScore : '0')}
+                </span>
                 <span className="text-zinc-500 mb-1 font-medium">FairScore</span>
               </div>
-              <p className="text-[13px] leading-tight text-zinc-400">Top 5% active Solana wallets. Access granted to gated subnets!</p>
+              <p className="text-[13px] leading-tight text-zinc-400">Top active Solana wallets. Access granted to gated subnets!</p>
               <div className="h-1.5 w-full bg-black rounded-full overflow-hidden mt-1">
-                <div className="h-full bg-[#1d9aef] w-[85%] rounded-full relative">
+                <div 
+                  className="h-full bg-[#1d9aef] rounded-full relative transition-all duration-1000 ease-out" 
+                  style={{ width: `${isScoreLoading ? 0 : scorePercentage}%` }}
+                >
                   <div className="absolute inset-0 bg-white/20 w-full animate-pulse"></div>
                 </div>
               </div>
