@@ -66,6 +66,7 @@ export function CommentItem({
               <p className="text-zinc-200">{text}</p>
               {imageUrlValue && (
                 <div className="mt-4 relative rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950/50">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={imageUrlValue} 
                     alt="Comment attachment" 

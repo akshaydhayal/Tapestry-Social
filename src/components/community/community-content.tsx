@@ -2,7 +2,7 @@
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { extractCommunityMeta } from '@/utils/community-meta'
-import { Hash, Lock, Globe, Users, Loader2, AlertCircle } from 'lucide-react'
+import { Hash, Lock, Globe, Loader2, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -228,7 +228,6 @@ export function CommunityContent({ communityProfile }: Props) {
               isLoadingMessages={isLoadingMessages} 
               onSendMessage={handleSendMessage}
               canPost={canPost}
-              currentUsername={mainUsername}
             />
           )}
         </div>

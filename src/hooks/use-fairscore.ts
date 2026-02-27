@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { extractFairScore, isScoreFresh, packFairScore } from '@/utils/fairscore-cache';
-import { IProfileList } from '@/models/profile.models';
 
 interface UseFairScoreReturn {
   fairScore: number | null;

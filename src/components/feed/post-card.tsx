@@ -1,9 +1,7 @@
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Heart, MessageCircle, Share2, RefreshCw } from 'lucide-react'
+import { Heart, MessageCircle } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 
 export interface PostProps {
   id: string
@@ -171,6 +169,7 @@ export function PostCard({ post }: { post: PostProps }) {
 
         {post.imageUrl && (
           <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 mt-2 mb-3 bg-zinc-950">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={post.imageUrl} 
               alt="Post attachment" 

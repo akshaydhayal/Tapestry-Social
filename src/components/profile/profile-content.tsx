@@ -1,7 +1,6 @@
 'use client'
 
 import { MyProfile } from '@/components/profile/my-profile'
-import type { IGetSocialResponse } from '@/models/profile.models'
 import { PublicKey } from '@solana/web3.js'
 import { useEffect, useState, useCallback } from 'react'
 import { RightSidebar } from '@/components/common/right-sidebar'

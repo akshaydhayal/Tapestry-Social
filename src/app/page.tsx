@@ -5,50 +5,9 @@ import { CreatePost } from '@/components/feed/create-post'
 import { PostProps } from '@/components/feed/post-card'
 import { useState, useEffect, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { Globe, Users, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useFollowEvent } from '@/hooks/use-follow-event'
 
-// Dummy data for visual presentation before Tapestry integration
-const initialDummyPosts: PostProps[] = [
-  {
-    id: '1',
-    author: {
-      username: 'AliceChain',
-      walletAddress: 'Aa11111111111111111111111111111111111111112',
-    },
-    content: "Just deployed my first smart contract on Solana Mainnet! 🚀 The speed and low fees are incredible. Who else is building today?",
-    subnet: '#SolanaDevs',
-    likesCount: 142,
-    commentsCount: 23,
-    createdAt: "2024-03-20T10:00:00.000Z"
-  },
-  {
-    id: '2',
-    author: {
-      username: 'DeFi_Degen',
-      walletAddress: 'Bb22222222222222222222222222222222222222223',
-    },
-    content: "If you're not paying attention to the new lending protocols launching this week, you're missing out on massive yield. 📈 NFA.",
-    subnet: '#DeFiDegens',
-    likesCount: 89,
-    commentsCount: 12,
-    createdAt: "2024-03-20T09:00:00.000Z"
-  },
-  {
-    id: '3',
-    author: {
-      username: 'NFTWhale.sol',
-      walletAddress: 'Cc33333333333333333333333333333333333333334',
-    },
-    content: "Swept the floor on Mad Lads today. The community is unmatched.",
-    subnet: '#NFTWhales',
-    likesCount: 456,
-    commentsCount: 89,
-    createdAt: "2024-03-20T08:00:00.000Z"
-  }
-]
-
-import { WhoToFollow } from '@/components/feed/who-to-follow'
 import { RightSidebar } from '@/components/common/right-sidebar'
 
 export default function HomeFeedPage() {

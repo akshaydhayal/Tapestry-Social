@@ -1,4 +1,3 @@
-import { socialfi } from '@/utils/socialfi'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {

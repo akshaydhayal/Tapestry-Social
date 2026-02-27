@@ -1,16 +1,16 @@
 'use client'
 
-import { Card } from '@/components/common/card'
 import { Feed } from '@/components/feed/feed'
 import { PostCard, PostProps } from '@/components/feed/post-card'
 import { RightSidebar } from '@/components/common/right-sidebar'
 import { ArrowLeft, Loader2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useProfileStore } from '@/store/profile'
 import { Avatar } from '@/components/ui/avatar'
 
-export default function PostDetailPage({ params }: { params: { id: string } }) {
+export default function PostDetailPage() {
+  const params = useParams<{ id: string }>()
   const router = useRouter()
   const { mainUsername, profileImage } = useProfileStore()
   const [post, setPost] = useState<PostProps | null>(null)
@@ -194,6 +194,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
             <div className="border-b border-t border-slate-500 px-4 py-3 flex gap-3">
               <Avatar className="h-10 w-10 ring-0">
                 {profileImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={profileImage} alt={mainUsername || 'Profile'} className="w-full h-full object-cover" />
                 ) : (
                   <div className="h-full w-full bg-gradient-to-br from-[#1d9aef] to-cyan-500 rounded-full flex items-center justify-center text-white font-bold">

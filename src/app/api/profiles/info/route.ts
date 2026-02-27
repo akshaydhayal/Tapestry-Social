@@ -1,4 +1,3 @@
-import { socialfi } from '@/utils/socialfi'
 import { NextResponse } from 'next/server'
 
 export async function GET(req: Request) {

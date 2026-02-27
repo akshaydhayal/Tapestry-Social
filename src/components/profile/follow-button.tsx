@@ -1,7 +1,6 @@
 'use client'
 
 import { Alert } from '@/components/common/alert'
-import { Button } from '@/components/common/button'
 import { LoadCircle } from '@/components/common/load-circle'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useGetFollowersState } from '@/components/profile/hooks/use-get-follower-state'

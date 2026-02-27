@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, CheckCheck, Loader2, Send } from 'lucide-react'
+import { CheckCheck, Loader2, Send } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
@@ -21,10 +21,9 @@ interface Props {
   isLoadingMessages: boolean
   onSendMessage?: (content: string) => Promise<void>
   canPost: boolean
-  currentUsername?: string
 }
 
-export function CommunityChat({ messages, isLoadingMessages, onSendMessage, canPost, currentUsername }: Props) {
+export function CommunityChat({ messages, isLoadingMessages, onSendMessage, canPost }: Props) {
   const [inputText, setInputText] = useState('')
   const [isSending, setIsSending] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)

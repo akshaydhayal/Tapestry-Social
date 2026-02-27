@@ -9,7 +9,7 @@ import { useAllProfiles } from '@/hooks/use-all-profiles'
 import Image from 'next/image'
 
 export default function CommunitiesDirectory() {
-  const { connected } = useWallet()
+  useWallet()
   const { profiles, loading } = useAllProfiles()
   const [mounted, setMounted] = useState(false)
 
@@ -53,7 +53,7 @@ export default function CommunitiesDirectory() {
                 } else if (parts && parts.length === 1 && !parts[0].includes('isCommunity')) {
                   description = parts[0]
                 }
-              } catch (e) {}
+              } catch {}
 
               const isRestricted = meta.gateType === 'fairscore' && meta.fairScoreGate > 0
               const image = community.profile?.image

@@ -4,11 +4,10 @@ import { useSuggestedGlobal } from '@/components/suggested-and-creators-invite/h
 import { useAllProfiles } from '@/hooks/use-all-profiles'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { FollowButton } from '@/components/profile/follow-button'
-import { User, Loader2, Sparkles } from 'lucide-react'
+import { User, Loader2 } from 'lucide-react'
 import { useFollowEvent } from '@/hooks/use-follow-event'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { cn } from '@/utils/utils'
 
 export function WhoToFollow() {
   const { walletAddress, mainUsername } = useCurrentWallet()

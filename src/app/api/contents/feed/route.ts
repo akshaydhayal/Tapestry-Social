@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const url = `https://api.usetapestry.dev/api/v1/contents/?apiKey=${process.env.TAPESTRY_API_KEY || ''}`
     

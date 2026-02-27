@@ -5,7 +5,7 @@ import { CreatePost } from '@/components/feed/create-post'
 import { PostProps } from '@/components/feed/post-card'
 import { useState, useEffect, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { ArrowLeft, LockKeyhole, Loader2 } from 'lucide-react'
+import { ArrowLeft, LockKeyhole } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
@@ -111,12 +111,6 @@ export default function SubnetPage() {
     }
   }, [subnet])
   
-  useEffect(() => {
-    // The useFairScore hook now handles fetching and caching the score automatically
-    // Determine the criteria
-    const criteria = SUBNET_GATES[subnet] || { minScore: 0, desc: 'Open to everyone.' }
-  }, [subnet])
-
   useEffect(() => {
     const criteria = SUBNET_GATES[subnet] || { minScore: 0, desc: 'Open to everyone.' }
     if (criteria.minScore === 0 || (userScore !== null && userScore >= criteria.minScore)) {

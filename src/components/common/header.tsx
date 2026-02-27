@@ -1,9 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { DialectNotificationComponent } from '../notifications/dialect-notifications-component'
 import { useProfileStore } from '@/store/profile'
 import { useAllProfiles } from '@/hooks/use-all-profiles'
@@ -13,7 +11,6 @@ export function Header() {
   const { mainUsername } = useProfileStore()
   const { profiles } = useAllProfiles()
   const [mounted, setMounted] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
@@ -78,7 +75,7 @@ export function Header() {
                   meta = JSON.parse(parts[1])
                   if (meta.name) name = meta.name
                 }
-              } catch (e) {}
+              } catch {}
 
               const isRestricted = meta.gateType === 'fairscore' && meta.fairScoreGate > 0
 

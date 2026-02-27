@@ -347,6 +347,7 @@ export function PortfolioView({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-muted rounded-lg overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={getNftImageUrl(selectedNft)}
                     alt={`NFT: ${selectedNft.content?.metadata?.name || 'Unnamed NFT'}`}
@@ -488,6 +489,7 @@ function TokenCard({ token }: { token: ITokenPortfolioItem }) {
     <div className="bg-card rounded-lg p-4 flex items-center hover:bg-muted transition-all duration-200">
       <div className="flex-shrink-0 w-10 h-10 mr-4">
         {token.logoURI && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={token.logoURI}
             alt={token.symbol}
@@ -553,6 +555,7 @@ function NFTCard({ nft, onViewDetails }: NFTCardProps) {
         }}
         aria-label={`View details for ${nftName}`}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getNftImageUrl(nft)}
           alt={`NFT: ${nftName}`}

@@ -22,7 +22,7 @@ export function RightSidebar() {
   const { profiles } = useGetProfiles({
     walletAddress: walletAddress || '',
   })
-  const { connected, publicKey } = useWallet()
+  const { connected } = useWallet()
   const [mounted, setMounted] = useState(false)
   
   const currentProfileList = profiles && profiles.length > 0 ? profiles[0] : null

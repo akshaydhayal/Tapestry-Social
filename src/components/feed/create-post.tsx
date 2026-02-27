@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/common/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar } from '@/components/ui/avatar'
-import { Hash, Image as ImageIcon, Send } from 'lucide-react'
+import { Hash, Image as ImageIcon } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useProfileStore } from '@/store/profile'
 
@@ -46,6 +45,7 @@ export function CreatePost({
       <div className="flex gap-3">
          <Avatar className="h-10 w-10 mt-1 ring-0">
            {profileImage ? (
+             // eslint-disable-next-line @next/next/no-img-element
              <img src={profileImage} alt={mainUsername || 'Profile'} className="w-full h-full object-cover" />
            ) : (
              <div className="h-full w-full bg-gradient-to-br from-[#1d9aef] to-cyan-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -83,6 +83,7 @@ export function CreatePost({
                 />
                 {imageUrl && (
                   <div className="mt-2 relative rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950/50 h-32 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={imageUrl} 
                       alt="Preview" 

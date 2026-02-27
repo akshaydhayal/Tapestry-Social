@@ -2,16 +2,11 @@
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { Alert } from '@/components/common/alert'
-import { Button } from '@/components/common/button'
 import { LoadCircle } from '@/components/common/load-circle'
 import { Input } from '@/components/form/input'
-import { SubmitButton } from '@/components/form/submit-button'
 import { useCreateProfile } from '@/components/profile/hooks/use-create-profile'
 
-import { cn } from '@/utils/utils'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { User } from 'lucide-react'
-import Image from 'next/image'
 import { useState } from 'react'
 
 interface Props {
@@ -26,7 +21,7 @@ export function CreateProfile({
   setProfileUsername,
 }: Props) {
   const { walletAddress, loadingMainUsername } = useCurrentWallet()
-  const { disconnect } = useWallet()
+  useWallet()
 
   const [tab, setTab] = useState<'individual' | 'community'>('individual')
   
