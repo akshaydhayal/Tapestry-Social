@@ -9,7 +9,7 @@ import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { useProfileStore } from '@/store/profile'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
 import { Button } from './button'
-import { User } from 'lucide-react'
+import { User, ShieldCheck } from 'lucide-react'
 import Image from 'next/image'
 import { CreateProfileContainer } from '../create-profile/create-profile-container'
 import { useFairScore } from '@/hooks/use-fairscore'
@@ -113,7 +113,10 @@ export function RightSidebar() {
                 </span>
                 <span className="text-zinc-500 mb-1 font-medium">FairScore</span>
               </div>
-              <p className="text-[13px] leading-tight text-zinc-400">Top active Solana wallets. Access granted to gated subnets!</p>
+              <div className="flex items-center gap-3 mb-4 mt-2">
+                <ShieldCheck className="text-[#1d9aef] h-10 w-10 shrink-0" />
+                <p className="text-[13px] leading-tight text-zinc-400">Top active Solana wallets. Access granted to gated communities!</p>
+              </div>
               <div className="h-1.5 w-full bg-black rounded-full overflow-hidden mt-1">
                 <div 
                   className="h-full bg-[#1d9aef] rounded-full relative transition-all duration-1000 ease-out" 

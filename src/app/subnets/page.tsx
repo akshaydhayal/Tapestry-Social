@@ -54,10 +54,10 @@ export default function SubnetsDirectory() {
       <main className="max-w-4xl mx-auto">
         <div className="mb-12 text-center mt-8">
           <h1 className="text-4xl md:text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 tracking-tight">
-            Discover Subnets
+            Discover Communities
           </h1>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Find your tribe. Subnets are community-led feeds where access can be gated by your on-chain reputation and holdings.
+          <p className="text-sm font-medium text-zinc-400 mt-1">
+            Find your tribe. Communities are community-led feeds where access can be gated by your on-chain reputation and holdings.
           </p>
         </div>
 

@@ -4,6 +4,9 @@ import { Card } from '@/components/common/card'
 import { CopyPaste } from '@/components/common/copy-paste'
 import { Bio } from '@/components/profile/bio'
 import { useGetProfileInfo } from '@/components/profile/hooks/use-get-profile-info'
+import { Button } from '@/components/common/button'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { useState } from 'react'
 import { User, Activity } from 'lucide-react'
 import Image from 'next/image'
 import { useFairScore } from '@/hooks/use-fairscore'
@@ -19,11 +22,13 @@ export function MyProfile({ username }: Props) {
     data?.profile?.username,
     data?.profile?.bio
   )
+  const [isEditing, setIsEditing] = useState(false)
+  const { mainUsername } = useCurrentWallet()
 
   return (
     <div className="w-full border-b border-zinc-900 pb-4">
       {/* Banner */}
-      <div className="h-48 w-full bg-gradient-to-r from-zinc-800 to-zinc-900 relative">
+      <div className="h-32 w-full bg-gradient-to-r from-zinc-800 to-zinc-900 relative">
         <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
       </div>
 
@@ -51,7 +56,11 @@ export function MyProfile({ username }: Props) {
 
         {/* Action Buttons (Edit Profile, etc. if needed later) */}
         <div className="flex justify-end pt-3 h-16">
-          {/* Future: Edit Profile Button */}
+          {mainUsername === (data?.profile?.username || username) && !isEditing && (
+            <Button onClick={() => setIsEditing(true)} variant="secondary" className="rounded-full font-medium h-9">
+              Edit Profile
+            </Button>
+          )}
         </div>
 
         {/* Name & Username */}
@@ -71,7 +80,7 @@ export function MyProfile({ username }: Props) {
 
         {/* Bio */}
         <div className="mt-3">
-          <Bio username={username} data={data} refetch={refetch} />
+          <Bio username={username} data={data} refetch={refetch} isEditing={isEditing} setIsEditing={setIsEditing} />
         </div>
 
         {/* Stats */}

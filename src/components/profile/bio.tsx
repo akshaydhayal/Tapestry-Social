@@ -14,9 +14,11 @@ interface Props {
   username: string
   data?: IProfileResponse
   refetch: () => void
+  isEditing: boolean
+  setIsEditing: (val: boolean) => void
 }
 
-export function Bio({ username: pathUsername, data, refetch }: Props) {
+export function Bio({ username: pathUsername, data, refetch, isEditing, setIsEditing }: Props) {
   const { updateProfile, loading } = useUpdateProfileInfo({ username: pathUsername })
   
   // Extract initial bio and score
@@ -26,7 +28,6 @@ export function Bio({ username: pathUsername, data, refetch }: Props) {
   const [cachedScore, setCachedScore] = useState<CachedFairScore | null>(initialExtraction.cachedScore)
   const [editUsername, setEditUsername] = useState(data?.profile?.username || pathUsername || '')
   const [image, setImage] = useState(data?.profile?.image || '')
-  const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -111,27 +112,19 @@ export function Bio({ username: pathUsername, data, refetch }: Props) {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 mt-2">
-            <div>
-              <p className="text-sm text-zinc-500 uppercase tracking-wider font-semibold mb-1">Bio</p>
-              <p className="text-zinc-300">
-                {bio ? bio : 'No bio provided'}
-              </p>
-            </div>
-            <div className="pt-2">
-              <Button onClick={() => setIsEditing(true)} variant="secondary" className="w-full sm:w-auto">
-                <Pencil size={16} className="mr-2" />
-                Edit Profile
-              </Button>
-            </div>
+          <div className="flex text-[15px] items-center gap-3 mt-1">
+            {/* <span className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Bio</span> */}
+            <span className="text-zinc-100">
+              {bio ? bio : 'No bio provided'}
+            </span>
           </div>
         )
       ) : (
-        <div>
-          <p>Bio</p>
-          <p className="text-gray">
-            {bio ? bio : 'no bio'}
-          </p>
+        <div className="flex text-[15px] items-center gap-3 mt-1">
+          <span className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Bio</span>
+          <span className="text-zinc-100">
+            {bio ? bio : 'No bio provided'}
+          </span>
         </div>
       )}
     </div>

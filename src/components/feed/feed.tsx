@@ -22,7 +22,7 @@ export function Feed({ posts, isLoading }: FeedProps) {
     return (
       <div className="text-center py-12 text-zinc-500 bg-zinc-950/30 rounded-xl border border-zinc-800/50">
         <p className="text-lg">No posts to show yet.</p>
-        <p className="text-sm mt-2">Follow some users or join a subnet to see activity here!</p>
+        <p className="text-sm mt-2">Follow some users or join a community to see activity here!</p>
       </div>
     )
   }
