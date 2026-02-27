@@ -1,7 +1,6 @@
 'use client'
 
 import { MyProfile } from '@/components/profile/my-profile'
-import { getFollowers, getFollowing } from '@/lib/tapestry'
 import type { IGetSocialResponse } from '@/models/profile.models'
 import { PublicKey } from '@solana/web3.js'
 import { useEffect, useState, useCallback } from 'react'
@@ -9,6 +8,7 @@ import { RightSidebar } from '@/components/common/right-sidebar'
 import { Feed } from '@/components/feed/feed'
 import { PostProps } from '@/components/feed/post-card'
 import { Loader2 } from 'lucide-react'
+import { CommunityContent } from '@/components/community/community-content'
 
 interface Props {
   username: string
@@ -16,8 +16,6 @@ interface Props {
 
 export function ProfileContent({ username }: Props) {
   const [isLoading, setIsLoading] = useState(true)
-  const [followers, setFollowers] = useState<IGetSocialResponse | null>(null)
-  const [following, setFollowing] = useState<IGetSocialResponse | null>(null)
   const [profileUsername, setProfileUsername] = useState(username)
   const [profileIds, setProfileIds] = useState<string[]>([])
   const [posts, setPosts] = useState<PostProps[]>([])
@@ -57,6 +55,7 @@ export function ProfileContent({ username }: Props) {
             // Collect unique IDs for filtering (Profile ID and Wallet Address)
             const ids = [p.profile.id, p.wallet?.address].filter(Boolean)
             setProfileIds(ids)
+            setRawProfileData(p)
           }
         } catch {
           // Not a public key, use as username directly
@@ -75,20 +74,10 @@ export function ProfileContent({ username }: Props) {
             // Collect unique IDs for filtering (Profile ID and Wallet Address)
             const ids = [p.profile.id, p.wallet?.address].filter(Boolean)
             setProfileIds(ids)
+            setRawProfileData(p)
           }
         }
 
-        // Fetch followers and following
-        const followersData = await getFollowers({
-          username: actualUsername,
-        })
-
-        const followingData = await getFollowing({
-          username: actualUsername,
-        })
-
-        setFollowers(followersData)
-        setFollowing(followingData)
       } catch (error) {
         console.error('Error initializing profile:', error)
       } finally {
@@ -161,14 +150,13 @@ export function ProfileContent({ username }: Props) {
     } finally {
       setIsLoadingPosts(false)
     }
-  }, [profileIds, mounted])
+  }, [profileIds])
 
   useEffect(() => {
     fetchUserPosts()
   }, [fetchUserPosts])
 
   // Add special case handling for the wallet address the user is trying to view
-  // Special case handling for specific wallet
   useEffect(() => {
     if (username === '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz') {
       console.log('Special case detected in profile content')
@@ -176,6 +164,8 @@ export function ProfileContent({ username }: Props) {
       setIsLoading(false)
     }
   }, [username])
+
+  const [rawProfileData, setRawProfileData] = useState<any>(null)
 
   if (isLoading) {
     return (
@@ -187,6 +177,15 @@ export function ProfileContent({ username }: Props) {
         </div>
       </div>
     )
+  }
+
+  const isCommunity = rawProfileData && (
+    rawProfileData.profile?.username?.startsWith('Community_') || 
+    rawProfileData.profile?.bio?.includes('"isCommunity":true')
+  )
+
+  if (isCommunity) {
+    return <CommunityContent communityProfile={rawProfileData} />
   }
 
   return (

@@ -3,7 +3,6 @@
 import { cn } from '@/utils/utils'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { useState, useEffect } from 'react'
 import * as React from 'react'
 
 const Dialog = DialogPrimitive.Root
@@ -96,13 +95,7 @@ const DialogContent = React.forwardRef<
             onClick={onClose}
             className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground cursor-pointer"
           >
-            {(() => {
-              const [mounted, setMounted] = React.useState(false)
-              React.useEffect(() => {
-                setMounted(true)
-              }, [])
-              return mounted ? <X className="h-4 w-4" /> : null
-            })()}
+            <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}

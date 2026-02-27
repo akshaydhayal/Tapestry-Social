@@ -29,9 +29,9 @@ export function Header() {
         <Link 
           href="/" 
           className="flex items-center justify-center hover:bg-zinc-900 transition-colors mt-4 mb-6 text-2xl font-bold font-serif"
-          title="Tapestry"
+          title="Tapestry Social"
         >
-          Tapestry Reddit
+          Tapestry Social
         </Link>
 
         <nav className="flex flex-col gap-1 w-full items-center xl:items-start">

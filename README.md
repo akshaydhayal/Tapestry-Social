@@ -1,6 +1,6 @@
-# Solana Starter Kit
+# Tapestry Social 
 
-Welcome to the **Solana Starter Kit**! This guide is designed to help you quickly start building blockchain applications on Solana by providing a comprehensive template and clear, step-by-step instructions.
+Welcome to **Tapestry Social**! A decentralized social platform and community builder powered by the Tapestry protocol on Solana. This repository was built for the Graveyard Hackathon Onchain Social track.
 
 ## User Journey
 
@@ -79,4 +79,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contributing
 
-We welcome contributions to the Solana Starter Kit! By contributing, you agree that your contributions will be licensed under the MIT License. Please feel free to submit issues, fork the repository, and create pull requests.
+Contributions to Tapestry Social are welcome! By contributing, you agree that your contributions will be licensed under the MIT License. Please feel free to submit issues, fork the repository, and create pull requests.

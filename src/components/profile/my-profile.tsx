@@ -1,10 +1,8 @@
 'use client'
 
-import { Card } from '@/components/common/card'
 import { CopyPaste } from '@/components/common/copy-paste'
 import { Bio } from '@/components/profile/bio'
 import { useGetProfileInfo } from '@/components/profile/hooks/use-get-profile-info'
-import { Button } from '@/components/common/button'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useState } from 'react'
 import { User, Activity } from 'lucide-react'

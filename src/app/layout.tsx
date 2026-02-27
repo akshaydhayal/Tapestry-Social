@@ -10,9 +10,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SolanaSwap - Modern Solana Trading Platform',
+  title: 'Tapestry Social - The On-chain Social Network',
   description:
-    'Trade Solana tokens with the most modern and efficient swap platform',
+    'A decentralized social platform and community builder powered by the Tapestry protocol on Solana.',
 }
 
 export default function RootLayout({
