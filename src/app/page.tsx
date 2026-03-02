@@ -91,9 +91,9 @@ export default function HomeFeedPage() {
           }
         })
       
-      // Filter out empty posts without text and sort newest first
+      // Filter out empty posts without text and subnet posts, sort newest first
       const validPosts = tapestryPosts
-        .filter(p => p.content !== 'No content')
+        .filter(p => p.content !== 'No content' && !p.subnet)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       
       setPosts(validPosts)

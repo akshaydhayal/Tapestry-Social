@@ -5,9 +5,10 @@ import { PostCard, PostProps } from './post-card'
 interface FeedProps {
   posts: PostProps[]
   isLoading?: boolean
+  hideSubnets?: boolean
 }
 
-export function Feed({ posts, isLoading }: FeedProps) {
+export function Feed({ posts, isLoading, hideSubnets }: FeedProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4 animate-pulse">
@@ -30,7 +31,7 @@ export function Feed({ posts, isLoading }: FeedProps) {
   return (
     <div className="flex flex-col gap-4">
       {posts.map((post) => (
-        <PostCard key={post.id} post={{...post}} />
+        <PostCard key={post.id} post={{...post}} hideSubnet={hideSubnets} />
       ))}
     </div>
   )

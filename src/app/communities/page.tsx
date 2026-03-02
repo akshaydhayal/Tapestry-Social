@@ -7,6 +7,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
 import { useAllProfiles } from '@/hooks/use-all-profiles'
 import Image from 'next/image'
+import { getCleanBio } from '@/utils/bio-utils'
+import { extractCommunityMeta } from '@/utils/community-meta'
 
 export default function CommunitiesDirectory() {
   useWallet()
@@ -41,21 +43,12 @@ export default function CommunitiesDirectory() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {communities.map((community: any, idx) => {
               const username = community.profile?.username || ''
-              let name = username.replace('Community_', '')
-              let description = 'A Tapestry community.'
-              let meta: any = {}
-              try {
-                const parts = community.profile?.bio?.split('|||META|||')
-                if (parts && parts.length > 1) {
-                  description = parts[0]
-                  meta = JSON.parse(parts[1])
-                  if (meta.name) name = meta.name
-                } else if (parts && parts.length === 1 && !parts[0].includes('isCommunity')) {
-                  description = parts[0]
-                }
-              } catch {}
+              const bio = community.profile?.bio || ''
+              const { meta } = extractCommunityMeta(bio)
+              const name = meta?.name || username.replace('Community_', '')
+              const description = getCleanBio(bio) || 'A Tapestry community.'
 
-              const isRestricted = meta.gateType === 'fairscore' && meta.fairScoreGate > 0
+              const isRestricted = meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0
               const image = community.profile?.image
 
               return (

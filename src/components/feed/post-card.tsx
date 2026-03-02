@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react'
 import { useProfileStore } from '@/store/profile'
 import { ProfileHoverCard } from '@/components/profile/profile-hover-card'
 
-export function PostCard({ post }: { post: PostProps }) {
+export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: boolean }) {
   const router = useRouter()
   const { mainUsername } = useProfileStore()
   const [mounted, setMounted] = useState(false)
@@ -111,6 +111,20 @@ export function PostCard({ post }: { post: PostProps }) {
     router.push(`/${post.author.username}`)
   }
 
+  // Parse out title if it exists from the auto-formatting
+  let title = '';
+  let textContent = post.content;
+  // Match **Title**\n\nRest of content
+  const titleMatch = textContent.match(/^\*\*([^*]+)\*\*(?:\s*\n\n\s*|\s+)([\s\S]*)$/);
+  if (titleMatch) {
+    title = titleMatch[1];
+    textContent = titleMatch[2];
+  } else if (textContent.startsWith('**') && textContent.endsWith('**') && !textContent.includes('\n')) {
+     // Case where there is only a title and no description
+     title = textContent.replace(/\*\*/g, '');
+     textContent = '';
+  }
+
   return (
     <article 
       onClick={() => router.push(`/post/${post.id}`)}
@@ -156,16 +170,21 @@ export function PostCard({ post }: { post: PostProps }) {
             <span className="text-[15px] text-zinc-500 hover:underline">{mounted ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '...'}</span>
           </div>
           
-          {post.subnet && (
+          {!hideSubnet && post.subnet && (
             <Badge variant="secondary" className="bg-[#1d9aef]/10 text-[#1d9aef] border border-transparent px-2 py-0 hover:bg-[#1d9aef]/20 transition-colors whitespace-nowrap text-xs ml-2">
               {post.subnet}
             </Badge>
           )}
         </div>
 
-        <div className="text-[15px] text-zinc-100 mb-3 leading-normal whitespace-pre-wrap break-words">
-          {post.content}
-        </div>
+        {title && (
+          <h3 className="text-lg font-bold text-white mb-1.5 leading-snug tracking-wide">{title}</h3>
+        )}
+        {textContent && (
+          <div className="text-[15px] text-zinc-100 mb-3 leading-normal whitespace-pre-wrap break-words">
+            {textContent}
+          </div>
+        )}
 
         {post.imageUrl && (
           <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 mt-2 mb-3 bg-zinc-950">
@@ -208,22 +227,22 @@ export function PostCard({ post }: { post: PostProps }) {
 
         {showCommentBox && (
           <div 
-            className="mt-3 flex gap-2 w-full pt-1"
+            className={`mt-3 flex gap-2 w-full pt-1 ${post.subnet ? 'bg-zinc-900 border border-zinc-800 p-3 rounded-xl shadow-inner' : ''}`}
             onClick={(e) => e.stopPropagation()}
           >
             <input
               type="text"
-              placeholder="Post your reply"
+              placeholder={post.subnet ? "Add a comment..." : "Post your reply"}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              className="flex-1 bg-transparent border-b border-zinc-800 px-1 py-2 text-[15px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#1d9aef] transition-colors"
+              className={`flex-1 bg-transparent px-1 py-1.5 text-[15px] text-white placeholder:text-zinc-500 focus:outline-none transition-colors ${post.subnet ? 'border-none' : 'border-b border-zinc-800 focus:border-[#1d9aef]'}`}
             />
             <button
               onClick={(e) => handleComment(e)}
               disabled={isCommenting || !commentText.trim()}
-              className="px-4 py-1.5 bg-[#1d9aef] hover:bg-[#1a8cd8] text-white text-sm font-bold rounded-full transition-colors disabled:opacity-50 mt-1"
+              className={`px-4 py-1.5 text-white text-sm font-bold transition-colors disabled:opacity-50 mt-0.5 ${post.subnet ? 'bg-zinc-800 hover:bg-zinc-700 rounded-lg shadow-sm border border-zinc-700' : 'bg-[#1d9aef] hover:bg-[#1a8cd8] rounded-full'}`}
             >
-              {isCommenting ? '...' : 'Reply'}
+              {isCommenting ? '...' : (post.subnet ? 'Comment' : 'Reply')}
             </button>
           </div>
         )}

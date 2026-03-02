@@ -140,6 +140,7 @@ export function ProfileContent({ username }: Props) {
               isLiked: item.requestingProfileSocialInfo?.hasLiked || false,
             }
           })
+          .filter((p: PostProps) => !p.subnet)
           .sort((a: PostProps, b: PostProps) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         
         setPosts(userPosts)

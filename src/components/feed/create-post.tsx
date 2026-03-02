@@ -10,13 +10,15 @@ import { useProfileStore } from '@/store/profile'
 
 export function CreatePost({
   onSubmit,
-  isLoading
+  isLoading,
+  forcedSubnet
 }: {
   onSubmit: (content: string, subnet: string, imageUrl?: string) => void
   isLoading?: boolean
+  forcedSubnet?: string
 }) {
   const [content, setContent] = useState('')
-  const [subnet, setSubnet] = useState('')
+  const [subnet, setSubnet] = useState(forcedSubnet || '')
   const [imageUrl, setImageUrl] = useState('')
   const [showImageInput, setShowImageInput] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -103,23 +105,27 @@ export function CreatePost({
             <div className="flex items-center justify-between border-t border-zinc-900 mt-3 pt-3">
               <div className="flex items-center gap-1">
                  <div className="relative group">
-                   <Button 
-                     variant="ghost" 
-                     className="h-8 w-8 p-0 text-[#1d9aef] hover:bg-[#1d9aef]/10 rounded-full transition-colors flex items-center justify-center"
-                     disabled={!mounted}
-                   >
-                     {mounted && <Hash className="h-4 w-4" />}
-                   </Button>
-                   <div className="absolute top-full left-0 mt-2 p-2 bg-black border border-zinc-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 w-48">
-                     <input 
-                       type="text" 
-                       placeholder="e.g. SolanaDevs" 
-                       className="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-[#1d9aef]"
-                       value={subnet}
-                       onChange={(e) => setSubnet(e.target.value)}
-                       disabled={!connected || isLoading}
-                     />
-                   </div>
+                   {!forcedSubnet && (
+                     <>
+                       <Button 
+                         variant="ghost" 
+                         className="h-8 w-8 p-0 text-[#1d9aef] hover:bg-[#1d9aef]/10 rounded-full transition-colors flex items-center justify-center"
+                         disabled={!mounted}
+                       >
+                         {mounted && <Hash className="h-4 w-4" />}
+                       </Button>
+                       <div className="absolute top-full left-0 mt-2 p-2 bg-black border border-zinc-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 w-48">
+                         <input 
+                           type="text" 
+                           placeholder="e.g. SolanaDevs" 
+                           className="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-[#1d9aef]"
+                           value={subnet}
+                           onChange={(e) => setSubnet(e.target.value)}
+                           disabled={!connected || isLoading}
+                         />
+                       </div>
+                     </>
+                   )}
                  </div>
                  
                  <Button 
