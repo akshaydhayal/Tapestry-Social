@@ -49,17 +49,9 @@ export function CreateCommunityPostModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="p-4 bg-zinc-900 border-b border-zinc-800 flex items-center gap-3 cursor-pointer hover:bg-zinc-800/80 transition-colors">
-          <div className="h-10 w-10 bg-gradient-to-br from-[#1d9aef] to-cyan-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-             {mainUsername ? mainUsername.charAt(0).toUpperCase() : '?'}
-          </div>
-          <div className="flex-1 bg-black border border-zinc-800 rounded-full px-4 py-2.5 text-zinc-500 text-sm">
-            Create Post
-          </div>
-          <Button variant="ghost" className="shrink-0 text-[#1d9aef] bg-[#1d9aef]/10 rounded-full h-10 w-10 p-0 flex items-center justify-center">
-             <ImageIcon className="h-5 w-5" />
-          </Button>
-        </div>
+        <Button className="bg-[#1d9aef] hover:bg-[#1a8cd8] text-white shadow-md font-bold rounded-full text-sm h-9 px-5 transition-all">
+          Create Post
+        </Button>
       </DialogTrigger>
       
       <DialogContent className="sm:max-w-[500px] bg-zinc-950 border-zinc-800 p-0 overflow-hidden text-white gap-0">

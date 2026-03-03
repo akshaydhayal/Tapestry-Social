@@ -165,7 +165,7 @@ export function CommunityContent({ communityProfile }: Props) {
     }
   }
 
-  const mockMemberCount = mounted ? Math.floor(Math.sin(name.length) * 500) + 600 : '...'
+  const memberCount = communityProfile.socialCounts?.followerCount || 0
 
   return (
     <div className="flex w-full min-h-screen">
@@ -173,31 +173,31 @@ export function CommunityContent({ communityProfile }: Props) {
         {/* Community Header (Sticky) */}
         <header className="sticky top-0 z-20 bg-zinc-950 border-b border-zinc-900 shrink-0 shadow-lg relative">
           {/* Banner Placeholder */}
-          <div className="h-24 w-full bg-gradient-to-r from-zinc-800 to-zinc-900 absolute top-0 left-0 right-0 overflow-hidden">
+          <div className="h-20 w-full bg-gradient-to-r from-zinc-800 to-zinc-900 absolute top-0 left-0 right-0 overflow-hidden">
             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
           </div>
           
-          <div className="relative pt-12 px-4 pb-4">
+          <div className="relative pt-6 px-4 pb-4">
             <div className="flex items-end justify-between">
               {/* Profile Image & Name */}
-              <div className="flex items-end gap-3 translate-y-2">
-                 <div className="h-20 w-20 flex-shrink-0 rounded-2xl bg-zinc-900 flex items-center justify-center text-3xl border-4 border-zinc-950 shadow-xl overflow-hidden relative z-10">
+              <div className="flex items-end gap-3 translate-y-1">
+                 <div className="h-16 w-16 flex-shrink-0 rounded-2xl bg-zinc-900 flex items-center justify-center text-2xl border-2 border-zinc-950 shadow-xl overflow-hidden relative z-10">
                    {image ? (
                      <Image src={image} alt={name} fill unoptimized className="object-cover" />
                    ) : (
-                     <Hash className="h-8 w-8 text-[#1d9aef]" />
+                     <Hash className="h-6 w-6 text-[#1d9aef]" />
                    )}
                  </div>
-                 <div className="flex flex-col pb-1">
+                 <div className="flex flex-col pb-0.5">
                     <div className="flex items-center gap-1.5">
-                      <h1 className="text-xl font-black text-white">{name}</h1>
+                      <h1 className="text-lg font-black text-white">{name}</h1>
                     </div>
-                    <span className="text-[13px] text-zinc-400 font-medium">@{username}</span>
+                    <span className="text-[12px] text-zinc-400 font-medium">@{username}</span>
                  </div>
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 relative z-10 pb-1">
+              <div className="flex items-center gap-2 relative z-10">
                 {canPost && (
                   <CreateCommunityPostModal onSubmit={handleCreatePost} communityName={name} />
                 )}
@@ -205,34 +205,34 @@ export function CommunityContent({ communityProfile }: Props) {
                 <Button 
                   onClick={handleJoin} 
                   disabled={isJoined || stateLoading || followLoading || scoreLoading || !mainUsername}
-                  className={`h-9 px-5 text-sm font-bold rounded-full transition-all ${isJoined ? 'bg-zinc-800 text-white hover:bg-zinc-700 cursor-default border border-zinc-700' : 'bg-white text-black hover:bg-zinc-200 shadow-md'}`}
+                  className={`h-8 px-4 text-xs font-bold rounded-full transition-all ${isJoined ? 'bg-zinc-800 text-white hover:bg-zinc-700 cursor-default border border-zinc-700' : 'bg-white text-black hover:bg-zinc-200 shadow-md'}`}
                 >
-                  {stateLoading ? <Loader2 className="h-4 w-4 animate-spin mx-2" /> : isJoined ? 'Joined' : 'Join Group'}
+                  {stateLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin mx-2" /> : isJoined ? 'Joined' : 'Join Group'}
                 </Button>
               </div>
             </div>
             
-            <div className="mt-5 space-y-2.5">
+            <div className="mt-4 space-y-2">
               {bio && (
-                <p className="text-[14px] text-zinc-300 leading-snug">
+                <p className="text-[13px] text-zinc-300 leading-snug">
                   {bio}
                 </p>
               )}
               
-              <div className="flex items-center gap-4 text-[13px] text-zinc-400 font-medium">
+              <div className="flex items-center gap-4 text-[12px] text-zinc-400 font-medium">
                 <span className="flex items-center gap-1.5">
-                  <span className="text-white font-bold">{mockMemberCount}</span> Members
+                  <span className="text-white font-bold">{memberCount}</span> Members
                 </span>
                 <span className="flex items-center gap-1">
                   {isGated ? (
                     <>
-                      <Lock className="h-3.5 w-3.5 text-amber-500" />
-                      <span className="text-amber-500/90">Requires Rep &gt; {gateScore}</span>
+                      <Lock className="h-3 w-3 text-amber-500" />
+                      <span className="text-amber-500/90 font-semibold">Rep &gt; {gateScore}</span>
                     </>
                   ) : (
                     <>
-                      <Globe className="h-3.5 w-3.5 text-emerald-500" />
-                      <span className="text-emerald-500/90">Public Group</span>
+                      <Globe className="h-3 w-3 text-emerald-500" />
+                      <span className="text-emerald-500/90 font-semibold">Public</span>
                     </>
                   )}
                 </span>
