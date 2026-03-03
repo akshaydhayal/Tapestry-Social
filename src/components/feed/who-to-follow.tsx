@@ -8,12 +8,15 @@ import { User, Loader2 } from 'lucide-react'
 import { useFollowEvent } from '@/hooks/use-follow-event'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ProfileHoverCard } from '@/components/profile/profile-hover-card'
 
 export function WhoToFollow() {
   const { walletAddress, mainUsername } = useCurrentWallet()
   const { profiles: suggestedProfiles, loading: loadingSuggested, getSuggestedGlobal } = useSuggestedGlobal()
   const { profiles: allProfiles, loading: loadingAll } = useAllProfiles()
   const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
@@ -53,9 +56,9 @@ export function WhoToFollow() {
   if (!mounted) return null
 
   return (
-    <div className="pt-4 mt-2 px-5 relative overflow-hidden group">
+    <div className="pt-4 mt-1 px-4 relative overflow-hidden group">
       <div className="flex items-center gap-2 mb-4">
-        <h3 className="font-black text-[11px] text-zinc-500 uppercase tracking-widest px-0">
+        <h3 className="font-black text-[13px] text-slate-200 uppercase tracking-widest px-0">
           {suggestedProfiles && suggestedProfiles.length > 0 ? (
             <>Suggested People</>
           ) : (
@@ -70,48 +73,46 @@ export function WhoToFollow() {
 
       <div className="flex flex-col gap-4">
         {displayProfiles.map((item: any, index: number) => {
-          // Normalizing the profile data between different hook/API formats
-          // 1. Suggested profile format: item.profile
-          // 2. Identity format: item.profiles[0].profile
-          // 3. Search result format: item.profile
-          // 4. Fallback: item itself
           const profile = item.profile || (item.profiles && item.profiles[0]?.profile) || item;
-          
           const username = profile.username || 'Anonymous';
           const image = profile.image;
-          // Namespace can be in various places
           const namespace = item.namespace?.name || profile.namespace || (item.profiles && item.profiles[0]?.namespace?.name) || 'User';
 
           if (!username || username === 'Anonymous') return null;
 
           return (
             <div key={index} className="flex items-center justify-between gap-2 py-1.5 group/item transition-colors">
-              <div className="flex items-center gap-2.5 overflow-hidden">
-                {image ? (
-                  <div className="relative">
-                    <Image
-                      src={image}
-                      width={32}
-                      height={32}
-                      alt={username}
-                      className="rounded-full object-cover min-w-[32px] h-[32px] border border-white/5 shadow-md"
-                      unoptimized
-                    />
+              <ProfileHoverCard username={username}>
+                <div 
+                  onClick={() => router.push(`/${username}`)}
+                  className="flex items-center gap-2.5 overflow-hidden cursor-pointer group/link"
+                >
+                  {image ? (
+                    <div className="relative">
+                      <Image
+                        src={image}
+                        width={32}
+                        height={32}
+                        alt={username}
+                        className="rounded-full object-cover min-w-[32px] h-[32px] border border-white/5 shadow-md group-hover/link:opacity-80 transition-opacity"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div className="min-w-[32px] h-[32px] rounded-full bg-zinc-900 border border-zinc-800/50 flex items-center justify-center text-zinc-500 group-hover/link:bg-zinc-800 transition-colors">
+                      <User size={16} />
+                    </div>
+                  )}
+                  <div className="flex flex-col overflow-hidden">
+                    <p className="font-bold text-[13px] text-white truncate leading-tight group-hover/link:text-[#1d9aef] transition-colors">
+                      {username}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 truncate font-inter font-semibold uppercase tracking-tighter mt-0.5">
+                      {namespace}
+                    </p>
                   </div>
-                ) : (
-                  <div className="min-w-[32px] h-[32px] rounded-full bg-zinc-900 border border-zinc-800/50 flex items-center justify-center text-zinc-500">
-                    <User size={16} />
-                  </div>
-                )}
-                <div className="flex flex-col overflow-hidden">
-                  <p className="font-bold text-[13px] text-white truncate leading-tight">
-                    {username}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 truncate font-inter font-semibold uppercase tracking-tighter mt-0.5">
-                    {namespace}
-                  </p>
                 </div>
-              </div>
+              </ProfileHoverCard>
               <FollowButton username={username} />
             </div>
           )
@@ -119,7 +120,7 @@ export function WhoToFollow() {
 
         {isLoading && displayProfiles.length === 0 && (
           <div className="flex justify-center py-4">
-            <Loader2 className="h-6 w-6 text-indigo-500 animate-spin" />
+            <Loader2 className="h-6 w-6 text-[#1d9aef] animate-spin" />
           </div>
         )}
 

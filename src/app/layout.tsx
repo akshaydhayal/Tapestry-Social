@@ -35,7 +35,9 @@ export default function RootLayout({
               <Header />
               <Toaster />
               <div className="flex-1 flex min-w-0">
-                {children}
+                <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black min-h-screen relative overflow-x-hidden">
+                  {children}
+                </main>
                 <RightSidebar />
               </div>
             </div>

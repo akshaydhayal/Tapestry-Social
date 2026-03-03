@@ -50,14 +50,11 @@ export function RightSidebar() {
     }
   }, [profiles, isProfileCreated, profileUsername, setProfileData])
 
-  // Calculate percentage for progress bar (cap at 100%, assuming 1000 is a high score)
-  const scorePercentage = fairScore !== null ? Math.min(100, Math.max(0, (fairScore / 1000) * 100)) : 0
-
   return (
-    <aside className="hidden lg:block w-[350px] pl-6 pt-2 h-screen sticky top-0 border-l border-[#3f3f46] bg-[#050507]">
+    <aside className="hidden lg:block w-[355px] pl-6 pt-2 h-screen sticky top-0 border-l border-[#3f3f46] bg-[#050507]">
       
       {/* Profile & Wallet Header */}
-      <div className="sticky top-0 bg-transparent pt-4 pb-6 z-10 w-full mb-2 flex items-center gap-2 px-2">
+      <div className="sticky top-0 bg-transparent pt-4 pb-6 z-10 w-full mb-0 flex items-center gap-2 px-2">
         {mounted && connected && (
           <div className="flex-shrink-0">
             {mainUsername ? (
@@ -101,41 +98,45 @@ export function RightSidebar() {
         </div>
       </div>
 
-      {/* Combined Reputation & Who to Follow Card */}
-      <div className="bg-[#0c0c0e] border border-zinc-800/50 rounded-2xl pt-5 pb-2 mb-4 w-full overflow-hidden shadow-2xl">
-        <div className="px-5 mb-5">
-          <h3 className="font-black text-xs text-zinc-500 uppercase tracking-widest mb-4">Your Reputation</h3>
+      {/* Polished Reputation Card */}
+      <div className="bg-[#0c0c0e] border border-slate-500 rounded-2xl pt-5 pb-2 mb-4 w-full overflow-hidden shadow-2xl relative">
+        {/* Subtle background glow */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1d9aef]/5 blur-[60px] rounded-full"></div>
+        
+        <div className="px-5 relative z-10 border-b border-slate-500">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-black text-[12px] text-slate-200 uppercase tracking-[0.2em]">Wallet Reputation Score</h3>
+            <ShieldCheck className="h-3.5 w-3.5 text-slate-300" />
+          </div>
+          
           {mounted && connected ? (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-black text-white bg-gradient-to-br from-white to-zinc-500 bg-clip-text text-transparent">
-                  {isScoreLoading ? '...' : (fairScore !== null ? fairScore : '0')}
-                </span>
-                <span className="text-zinc-500 text-xs font-bold tracking-tight uppercase">FairScore</span>
-              </div>
-              <div className="flex items-center gap-3 mt-4 mb-4 bg-black/40 border border-zinc-800/50 p-2.5 rounded-xl">
-                <div className="h-8 w-8 rounded-full bg-[#1d9aef]/10 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="text-[#1d9aef] h-5 w-5" />
+            <div className="flex flex-col">
+              <div className="flex flex-col">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-black text-white tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.15)] leading-none">
+                    {isScoreLoading ? '...' : (fairScore !== null ? fairScore : '0')}
+                  </span>
+                  <div className="flex flex-col -translate-y-0.5">
+                    <span className="text-[#1d9aef] text-[10px] font-black tracking-widest uppercase inline-block">FairScore</span>
+                  </div>
                 </div>
-                <p className="text-[11px] leading-tight text-zinc-400 font-medium font-inter">Verified on-chain activity. Access to premium subnets granted.</p>
               </div>
-              <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden mt-1 shadow-inner">
-                <div 
-                  className="h-full bg-gradient-to-r from-[#1d9aef] to-cyan-400 rounded-full relative transition-all duration-1000 ease-out" 
-                  style={{ width: `${isScoreLoading ? 0 : scorePercentage}%` }}
-                >
-                  <div className="absolute inset-0 bg-white/20 w-full animate-pulse"></div>
-                </div>
+
+              <div className="bg-white/[0.03] py-3 rounded-xl">
+                <p className="text-[11px] leading-relaxed text-zinc-400 font-medium font-inter">
+                   On-chain reputation determines your access to premium communities.
+                </p>
               </div>
             </div>
           ) : (
-            <div className="text-[12px] text-zinc-500 font-medium py-2">
-              {mounted ? "Connect wallet to verify reputation." : "Initializing..."}
+            <div className="text-[12px] text-zinc-500 font-medium py-4 flex flex-col items-center gap-3 text-center border border-dashed border-zinc-800/50 rounded-xl">
+              <User className="h-6 w-6 text-zinc-800" />
+              <span className="px-4">Connect wallet to view your reputation.</span>
             </div>
           )}
         </div>
         
-        <div className="h-px bg-zinc-800/40 w-full mb-2"></div>
+        <div className="h-px bg-white/5 w-full mb-0"></div>
         
         <div className="scale-[0.98] origin-top">
           {mounted && <WhoToFollow />}

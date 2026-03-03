@@ -25,10 +25,10 @@ export function Header() {
       <div className="flex flex-col gap-2 xl:gap-1 items-center xl:items-start w-full">
         <Link 
           href="/" 
-          className="flex items-center justify-center hover:bg-zinc-900/50 transition-colors mt-6 mb-8 text-xl font-black bg-gradient-to-br from-white to-zinc-500 bg-clip-text text-transparent px-2"
+          className="flex items-center justify-center hover:bg-zinc-900/50 transition-colors mt-6 mb-8 text-2xl font-black bg-gradient-to-br from-white to-zinc-500 bg-clip-text text-transparent px-1"
           title="Tapestry Social"
         >
-          Tapestry
+          Tapestry Social
         </Link>
 
         <nav className="flex flex-col gap-1 w-full items-center xl:items-start">

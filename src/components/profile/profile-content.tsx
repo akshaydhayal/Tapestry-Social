@@ -189,35 +189,32 @@ export function ProfileContent({ username }: Props) {
   }
 
   return (
-    <div className="flex w-full min-h-screen bg-black">
-      <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black">
-        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#3f3f46] px-4 h-14 flex items-center gap-6">
-          <h1 className="text-xl font-bold text-white truncate">Profile</h1>
-        </header>
+    <>
+      <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#3f3f46] px-4 h-14 flex items-center gap-6">
+        <h1 className="text-xl font-bold text-white truncate">Profile</h1>
+      </header>
 
-        <MyProfile username={profileUsername} />
+      <MyProfile username={profileUsername} />
 
-        {/* Posts Feed */}
-        <div className="mt-2">
-          <div className="px-4 py-3 border-b border-[#3f3f46]">
-            <h3 className="text-[15px] font-bold text-white relative w-fit">
-              Posts
-              <div className="absolute -bottom-3 left-0 right-0 h-1 bg-[#1d9aef] rounded-full" />
-            </h3>
-          </div>
-          
-          <div className="">
-            {isLoadingPosts ? (
-              <div className="flex justify-center items-center py-12">
-                {mounted && <Loader2 className="h-8 w-8 text-[#1d9aef] animate-spin" />}
-              </div>
-            ) : (
-              <Feed posts={posts} />
-            )}
-          </div>
+      {/* Posts Feed */}
+      <div className="mt-2 text-white">
+        <div className="px-4 py-3 border-b border-[#3f3f46]">
+          <h3 className="text-[15px] font-bold text-white relative w-fit">
+            Posts
+            <div className="absolute -bottom-3 left-0 right-0 h-1 bg-[#1d9aef] rounded-full" />
+          </h3>
         </div>
-      </main>
-
-    </div>
+        
+        <div className="">
+          {isLoadingPosts ? (
+            <div className="flex justify-center items-center py-12">
+              {mounted && <Loader2 className="h-8 w-8 text-[#1d9aef] animate-spin" />}
+            </div>
+          ) : (
+            <Feed posts={posts} />
+          )}
+        </div>
+      </div>
+    </>
   )
 }

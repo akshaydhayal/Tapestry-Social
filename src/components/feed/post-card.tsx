@@ -114,13 +114,11 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
   // Parse out title if it exists from the auto-formatting
   let title = '';
   let textContent = post.content;
-  // Match **Title**\n\nRest of content
   const titleMatch = textContent.match(/^\*\*([^*]+)\*\*(?:\s*\n\n\s*|\s+)([\s\S]*)$/);
   if (titleMatch) {
     title = titleMatch[1];
     textContent = titleMatch[2];
   } else if (textContent.startsWith('**') && textContent.endsWith('**') && !textContent.includes('\n')) {
-     // Case where there is only a title and no description
      title = textContent.replace(/\*\*/g, '');
      textContent = '';
   }
@@ -135,7 +133,7 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
         className="flex-shrink-0 pt-1 relative z-10"
       >
         <ProfileHoverCard username={post.author.username}>
-          <div className="inline-block">
+          <div className="inline-block cursor-pointer">
             <Avatar className="h-9 w-9 ring-1 ring-zinc-800/50 hover:opacity-90 transition-opacity">
               {post.author.avatarUrl ? (
                 <Image src={post.author.avatarUrl} alt={post.author.username} fill className="object-cover" />
@@ -162,16 +160,18 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
             </ProfileHoverCard>
             <span 
               onClick={handleUserClick}
-              className="text-[13px] text-zinc-500 truncate max-w-[100px] font-medium"
+              className="text-[13px] text-zinc-500 truncate max-w-[100px] font-medium cursor-pointer hover:text-zinc-400 transition-colors"
             >
               @{post.author.walletAddress.slice(0,4)}...{post.author.walletAddress.slice(-4)}
             </span>
             <span className="text-zinc-600">·</span>
-            <span className="text-[13px] text-zinc-500 hover:text-zinc-400">{mounted ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '...'}</span>
+            <span className="text-[13px] text-zinc-500 cursor-pointer hover:text-zinc-400">
+               {mounted ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '...'}
+            </span>
           </div>
           
           {!hideSubnet && post.subnet && (
-            <Badge variant="secondary" className="bg-[#1d9aef]/5 text-[#1d9aef] border border-[#1d9aef]/10 px-1.5 py-0 hover:bg-[#1d9aef]/15 transition-colors whitespace-nowrap text-[10px] font-black uppercase tracking-tight ml-2">
+            <Badge variant="secondary" className="bg-[#1d9aef]/5 text-[#1d9aef] border border-[#1d9aef]/10 px-1.5 py-0 hover:bg-[#1d9aef]/15 transition-colors whitespace-nowrap text-[10px] font-black uppercase tracking-tight ml-2 cursor-pointer">
               {post.subnet}
             </Badge>
           )}
@@ -188,7 +188,6 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
 
         {post.imageUrl && (
           <div className="relative w-full rounded-2xl overflow-hidden border border-zinc-800 mt-2 mb-3 bg-zinc-950">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={post.imageUrl} 
               alt="Post attachment" 

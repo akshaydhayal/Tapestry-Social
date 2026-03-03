@@ -136,47 +136,45 @@ export default function HomeFeedPage() {
   const isCommunityProfile = mainUsername?.startsWith('Community_')
 
   return (
-    <div className="flex w-full min-h-screen">
-      <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black">
-        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#3f3f46] flex flex-col pt-2 cursor-pointer">
-          <div className="flex w-full h-14">
-            <button 
-              onClick={() => setFeedType('global')}
-              className="flex-1 flex justify-center items-center hover:bg-zinc-900/50 transition-colors relative font-bold text-[15px] group"
-            >
-              <div className="flex flex-col items-center h-full justify-center">
-                <span className={`${feedType === 'global' ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>For you</span>
-                {feedType === 'global' && (
-                  <div className="absolute bottom-0 h-1 w-14 bg-[#1d9aef] rounded-full"></div>
-                )}
-              </div>
-            </button>
-            <button 
-              onClick={() => setFeedType('following')}
-              className="flex-1 flex justify-center items-center hover:bg-zinc-900/50 transition-colors relative font-bold text-[15px] group"
-            >
-               <div className="flex flex-col items-center h-full justify-center">
-                <span className={`${feedType === 'following' ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>Following</span>
-                {feedType === 'following' && (
-                  <div className="absolute bottom-0 h-1 w-20 bg-[#1d9aef] rounded-full"></div>
-                )}
-              </div>
-            </button>
-          </div>
-        </header>
-
-        {!isCommunityProfile && <CreatePost onSubmit={handleCreatePost} isLoading={isSubmitting} />}
-        
-        <div className="w-full">
-          {isLoadingFeed ? (
-            <div className="flex justify-center items-center py-10">
-              {mounted && <Loader2 className="h-7 w-7 text-[#1d9aef] animate-spin" />}
+    <>
+      <header className="sticky top-0 z-[50] bg-black border-b border-[#3f3f46] flex flex-col pt-2 cursor-pointer shadow-xl">
+        <div className="flex w-full h-14 bg-black">
+          <button 
+            onClick={() => setFeedType('global')}
+            className="cursor-pointer flex-1 flex justify-center items-center hover:bg-zinc-900/50 transition-colors relative font-bold text-[15px] group"
+          >
+            <div className="flex flex-col items-center h-full justify-center">
+              <span className={`${feedType === 'global' ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>For you</span>
+              {feedType === 'global' && (
+                <div className="absolute bottom-0 h-1 w-14 bg-[#1d9aef] rounded-full"></div>
+              )}
             </div>
-          ) : (
-            <Feed posts={posts} />
-          )}
+          </button>
+          <button 
+            onClick={() => setFeedType('following')}
+            className="cursor-pointer flex-1 flex justify-center items-center hover:bg-zinc-900/50 transition-colors relative font-bold text-[15px] group"
+          >
+             <div className="flex flex-col items-center h-full justify-center">
+              <span className={`${feedType === 'following' ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>Following</span>
+              {feedType === 'following' && (
+                <div className="absolute bottom-0 h-1 w-20 bg-[#1d9aef] rounded-full"></div>
+              )}
+            </div>
+          </button>
         </div>
-      </main>
-    </div>
+      </header>
+
+      {!isCommunityProfile && <CreatePost onSubmit={handleCreatePost} isLoading={isSubmitting} />}
+      
+      <div className="w-full">
+        {isLoadingFeed ? (
+          <div className="flex justify-center items-center py-10">
+            {mounted && <Loader2 className="h-7 w-7 text-[#1d9aef] animate-spin" />}
+          </div>
+        ) : (
+          <Feed posts={posts} />
+        )}
+      </div>
+    </>
   )
 }

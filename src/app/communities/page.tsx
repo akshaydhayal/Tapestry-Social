@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
 import { useAllProfiles } from '@/hooks/use-all-profiles'
 import Image from 'next/image'
-import { getCleanBio } from '@/utils/bio-utils'
+import { getCommunityDescription } from '@/utils/bio-utils'
 import { extractCommunityMeta } from '@/utils/community-meta'
 
 
@@ -25,8 +25,8 @@ export default function CommunitiesDirectory() {
     : []
 
   return (
-    <div className="flex w-full min-h-screen bg-black">
-      <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black min-h-screen px-4 sm:px-6 lg:px-8">
+    <>
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center mt-12">
           <h1 className="text-4xl md:text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#1d9aef] via-blue-400 to-cyan-400 tracking-tight">
             Discover Communities
@@ -44,10 +44,9 @@ export default function CommunitiesDirectory() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto ">
             {communities.map((community: any, idx) => {
               const username = community.profile?.username || ''
-              const bio = community.profile?.bio || ''
-              const { meta } = extractCommunityMeta(bio)
+              const { meta } = extractCommunityMeta(community.profile?.bio)
               const name = meta?.name || username.replace('Community_', '')
-              const description = getCleanBio(bio) || 'A Tapestry community.'
+              const description = getCommunityDescription(community.profile?.bio, meta)
 
               const isRestricted = meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0
               const image = community.profile?.image
@@ -89,19 +88,6 @@ export default function CommunitiesDirectory() {
                       <p className="text-zinc-400 text-[13px] mb-4 flex-grow leading-relaxed line-clamp-2">
                         {description}
                       </p>
-                      
-                      {/* <div className="pt-3 border-t border-zinc-900/40 flex items-center justify-between mt-auto">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold flex items-center gap-1.5 bg-zinc-950/50 px-2 py-0.5 rounded">
-                            {isRestricted ? (mounted && <Lock className="h-2.5 w-2.5 text-zinc-600" />) : (mounted && <Globe className="h-2.5 w-2.5 text-zinc-600" />)}
-                            {isRestricted ? `Rep > ${meta.fairScoreGate || 0}` : 'Public'}
-                          </span>
-                        </div>
-                        
-                        <div className="p-1.5 rounded-full bg-zinc-900/80 text-zinc-400 group-hover:bg-[#1d9aef] group-hover:text-white transition-colors">
-                          {mounted && <ArrowRight className="h-3.5 w-3.5" />}
-                        </div>
-                      </div> */}
                     </CardContent>
                   </Card>
                 </Link>
@@ -113,7 +99,7 @@ export default function CommunitiesDirectory() {
             No communities have been created yet. Be the first!
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </>
   )
 }
