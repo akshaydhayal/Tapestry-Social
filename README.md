@@ -1,31 +1,46 @@
 # Tapestry Social: On-Chain Community Platform
 
-![Tapestry Social Hero](./docs/screenshots/home_feed.png)
+![Tapestry Social Hero](./docs/screenshots/hero_placeholder.png)
 
-Tapestry Social is a decentralized social platform built on Solana, powered by the **Tapestry Protocol**. It enables users to build communities, share content, and manage on-chain identities with a focus on reputation and gated access.
+Tapestry Social is a fully-featured decentralized social platform built on Solana, powered by the **Tapestry Protocol**. It enables users to build vibrant communities, share content dynamically, and manage on-chain identities with a strong focus on reputation and gated access.
 
-## ✨ Key Features
+## ✨ Key Features & Architecture
 
-### 1. **On-Chain Social Graph**
-Powered by Tapestry, every follow, post, and community interaction is recorded on the social graph, ensuring data ownership and interoperability across the Solana ecosystem.
+### 1. **Persistent & Expansive UI**
+- **Modern 3-Column Layout**: A full-width, expansive design with ultra-high contrast visual separation (`#3f3f46` borders) maximizing readability.
+- **Persistent Sidebars**: Left and right sidebars remain consistently mounted across page transitions for zero-reload navigation, providing a fluid, native app-like experience.
+- **Optimized Performance**: Built with Next.js App Router for blazing-fast load times.
+- **Responsive Design**: Carefully crated mobile and desktop unified views.
 
-### 2. **Gated Communities (FairScore)**
-Create and join niche communities that are gated by on-chain reputation.
-- **FairScore Integration**: Access is based on a verifiable reputation score, filtering for high-quality members.
-- **Dynamic Gating**: Community leads can set and update reputation requirements in real-time.
+![Layout UI Placeholder](./docs/screenshots/layout_placeholder.png)
 
-### 3. **Persistent & Expansive UI**
-- **Modern 3-Column Layout**: A full-width, expansive design with ultra-high contrast visual separation (`#3F3F46` borders).
-- **Persistent Sidebars**: Sidebars remain mounted across page transitions for zero-reloand navigation, providing a fluid, app-like experience.
-- **Optimized Performance**: Built with Next.js App Router for blazing fast load times.
+### 2. **Rich Content & Subnets**
+- **Integrated Feed**: Users can seamlessly read and write posts across different communities.
+- **Markdown & Image Support**: Posts fully support rich text, image attachments, and embeds.
+- **Community Subnets Categories**: Posts are automatically categorized into community-specific subnets. Metadata allows subnets to filter global feeds.
+- **CRUD Operations**: Users can seamlessly edit and delete posts dynamically.
 
-### 4. **Rich Content & Subnets**
-- **Markdown & Image Support**: Posts support rich text and image URLs.
-- **Community Subnets**: Posts are automatically categorized into community-specific subnets, keeping global and local feeds organized.
+![Feed Placeholder](./docs/screenshots/feed_placeholder.png)
 
-### 5. **Decentralized Identity**
-- **Solana Wallet Integration**: Full support for Solana wallets via standard adapters.
-- **Reputation-Centric Profiles**: Profiles prominently display decentralized reputation (FairScore) and follower counts.
+### 3. **Decentralized Identity & Profiles**
+- **Solana Wallet Integration**: Full support for Solana wallets via Privy/Standard Adapters.
+- **Customizable Profiles**: Set up custom bio, avatar, and banner with integrated Tapestry protocol API routes.
+- **Reputation-Centric Profiles**: Profiles prominently display decentralized reputation (FairScore), total followers, and joined subnets.
+- **User Following Strategy**: On-chain user relationships leveraging Tapestry Social Graph.
+
+![Profile UI Placeholder](./docs/screenshots/user_profile_placeholder.png)
+
+### 4. **Gated Communities & FairScore Ecosystem**
+Create and join niche communities that are gated natively by on-chain reputation logic.
+- **Dynamic Group Creation**: Any user can launch a new subnet assigning it properties like public vs private.
+- **FairScore Integration**: Access to posts and groups can be gated by verifiable reputation score (using FairScore). This filters for high-quality members.
+- **Configurable Restrictions**: Community leads can set and update reputation requirements (e.g., "Fairscore > 200 required to join/post").
+- **UI Enforcements**: Beautifully integrated lock screens, gated badges, and conditional feed rendering based on users' real-time score.
+
+![Gated Communities Placeholder](./docs/screenshots/gated_subnet_placeholder.png)
+
+### 5. **On-Chain Social Graph Base**
+Powered by Tapestry, every follow, post, modification, and community interaction is recorded on the social graph securely. Data ownership and interoperability are globally guaranteed across the Solana ecosystem.
 
 ## 📸 Demo Gallery
 
@@ -33,17 +48,18 @@ Create and join niche communities that are gated by on-chain reputation.
 |-----------|----------------------|
 | ![Home Feed](./docs/screenshots/home_feed.png) | ![Discover](./docs/screenshots/discover_communities.png) |
 
-| Community Hub | User Profile |
-|---------------|--------------|
-| ![Community](./docs/screenshots/community_profile.png) | ![Profile](./docs/screenshots/user_profile.png) |
+| Community Hub (Restricted) | User Profile |
+|-------------------------|--------------|
+| ![Community Restricted](./docs/screenshots/community_restricted.png) | ![Profile](./docs/screenshots/user_profile.png) |
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js](https://nextjs.org/) (App Router, React 18)
 - **Blockchain**: [Solana](https://solana.com/)
-- **Protocol**: [Tapestry](https://usetapestry.dev/)
+- **Protocol**: [Tapestry](https://usetapestry.dev/) API
 - **Styling**: Vanilla CSS + [Tailwind CSS](https://tailwindcss.com/)
-- **Auth**: [Privy](https://privy.io/) / Wallet-based
+- **UI Components**: Radix UI + Custom Glassmorphism
+- **Auth & Wallets**: [Privy](https://privy.io/) / Wallet-based
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
@@ -55,7 +71,7 @@ Create and join niche communities that are gated by on-chain reputation.
 
 ### 2. Installation
 ```bash
-git clone https://github.com/Primitives-xyz/solana-starter-kit
+git clone https://github.com/Primitives-xyz/solana-starter-kit # original starter
 cd gated-subnets-app
 pnpm install
 ```
@@ -71,6 +87,7 @@ NEXT_PUBLIC_PRIVY_APP_ID=your_key
 ```bash
 pnpm run dev
 ```
+Navigate to `http://localhost:3000` to start exploring.
 
 ## 📜 Contributing
 Contributions are welcome! Please feel free to submit issues or pull requests to help improve the Tapestry ecosystem.
