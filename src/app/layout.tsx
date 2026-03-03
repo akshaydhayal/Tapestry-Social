@@ -1,4 +1,5 @@
 import { Header } from '@/components/common/header'
+import { RightSidebar } from '@/components/common/right-sidebar'
 import { SolanaWalletProvider } from '@/components/provider/solana-provider'
 import { ThemeProvider } from '@/components/theme-provider'
 import type { Metadata } from 'next'
@@ -30,12 +31,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SolanaWalletProvider>
-            <div className="flex justify-center w-full min-h-screen">
-               <div className="w-full max-w-[1265px] flex justify-between">
-                 <Header />
-                 <Toaster />
-                 <div className="flex-1 flex max-w-[990px]">{children}</div>
-               </div>
+            <div className="flex w-full min-h-screen">
+              <Header />
+              <Toaster />
+              <div className="flex-1 flex min-w-0">
+                {children}
+                <RightSidebar />
+              </div>
             </div>
           </SolanaWalletProvider>
         </ThemeProvider>

@@ -53,11 +53,11 @@ export function WhoToFollow() {
   if (!mounted) return null
 
   return (
-    <div className="pt-6 border-t border-zinc-800/50 mt-6 relative overflow-hidden group">
-      <div className="flex items-center gap-2 mb-4 px-4 pt-2">
-        <h3 className="font-extrabold text-xl text-white flex items-center gap-2">
+    <div className="pt-4 mt-2 px-5 relative overflow-hidden group">
+      <div className="flex items-center gap-2 mb-4">
+        <h3 className="font-black text-[11px] text-zinc-500 uppercase tracking-widest px-0">
           {suggestedProfiles && suggestedProfiles.length > 0 ? (
-            <>Who to follow</>
+            <>Suggested People</>
           ) : (
             <>Discover People</>
           )}
@@ -85,29 +85,29 @@ export function WhoToFollow() {
           if (!username || username === 'Anonymous') return null;
 
           return (
-            <div key={index} className="flex items-center justify-between gap-3 group/item py-1">
-              <div className="flex items-center gap-3 overflow-hidden">
+            <div key={index} className="flex items-center justify-between gap-2 py-1.5 group/item transition-colors">
+              <div className="flex items-center gap-2.5 overflow-hidden">
                 {image ? (
                   <div className="relative">
                     <Image
                       src={image}
-                      width={40}
-                      height={40}
+                      width={32}
+                      height={32}
                       alt={username}
-                      className="rounded-full object-cover min-w-[40px] h-[40px] ring-1 ring-zinc-800 group-hover/item:ring-purple-500/50 transition-all shadow-lg"
+                      className="rounded-full object-cover min-w-[32px] h-[32px] border border-white/5 shadow-md"
                       unoptimized
                     />
                   </div>
                 ) : (
-                  <div className="min-w-[40px] h-[40px] rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover/item:border-purple-500/50 transition-all shadow-lg">
-                    <User size={20} />
+                  <div className="min-w-[32px] h-[32px] rounded-full bg-zinc-900 border border-zinc-800/50 flex items-center justify-center text-zinc-500">
+                    <User size={16} />
                   </div>
                 )}
                 <div className="flex flex-col overflow-hidden">
-                  <p className="font-bold text-xs text-zinc-100 truncate group-hover/item:text-purple-300 transition-colors">
+                  <p className="font-bold text-[13px] text-white truncate leading-tight">
                     {username}
                   </p>
-                  <p className="text-[10px] text-zinc-500 truncate uppercase mt-0.5 tracking-tighter font-mono">
+                  <p className="text-[10px] text-zinc-500 truncate font-inter font-semibold uppercase tracking-tighter mt-0.5">
                     {namespace}
                   </p>
                 </div>

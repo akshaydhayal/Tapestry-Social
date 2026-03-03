@@ -43,9 +43,9 @@ export function CreatePost({
   }
 
   return (
-    <div className="border-t border-b border-slate-600 pb-2 px-4 pt-4 mb-4">
+    <div className="border-b border-[#3f3f46] pb-3 px-4 pt-4 mb-2">
       <div className="flex gap-3">
-         <Avatar className="h-10 w-10 mt-1 ring-0">
+         <Avatar className="h-9 w-9 mt-1 ring-1 ring-white/5 shadow-md">
            {profileImage ? (
              // eslint-disable-next-line @next/next/no-img-element
              <img src={profileImage} alt={mainUsername || 'Profile'} className="w-full h-full object-cover" />
@@ -59,7 +59,7 @@ export function CreatePost({
          <div className="flex-1 min-w-0">
             <Textarea 
               placeholder={mounted && connected ? "What is happening?!" : (mounted ? "Please connect your wallet to post..." : "Loading...")}
-              className="min-h-[50px] bg-transparent border-none text-white placeholder:text-zinc-500 resize-none focus-visible:ring-0 p-0 text-xl py-2 shadow-none"
+              className="min-h-[50px] bg-transparent border-none text-white placeholder:text-zinc-600 resize-none focus-visible:ring-0 p-0 text-[18px] font-medium py-1 shadow-none"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               disabled={!connected || isLoading}
@@ -78,13 +78,13 @@ export function CreatePost({
                 <input 
                   type="text" 
                   placeholder="Paste Image URL here..." 
-                  className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-[#1d9aef] transition-colors"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/30 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-[#1d9aef] transition-colors"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   disabled={!connected || isLoading}
                 />
                 {imageUrl && (
-                  <div className="mt-2 relative rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950/50 h-32 flex items-center justify-center">
+                  <div className="mt-2 relative rounded-lg overflow-hidden border border-zinc-800/30 bg-zinc-950/50 h-32 flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={imageUrl} 
@@ -102,7 +102,7 @@ export function CreatePost({
               </div>
             )}
 
-            <div className="flex items-center justify-between border-t border-zinc-900 mt-3 pt-3">
+            <div className="flex items-center justify-between border-t border-[#3f3f46] mt-3 pt-3">
               <div className="flex items-center gap-1">
                  <div className="relative group">
                    {!forcedSubnet && (
@@ -114,11 +114,11 @@ export function CreatePost({
                        >
                          {mounted && <Hash className="h-4 w-4" />}
                        </Button>
-                       <div className="absolute top-full left-0 mt-2 p-2 bg-black border border-zinc-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 w-48">
+                       <div className="absolute top-full left-0 mt-2 p-2 bg-black border border-zinc-800/30 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 w-48">
                          <input 
                            type="text" 
                            placeholder="e.g. SolanaDevs" 
-                           className="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-[#1d9aef]"
+                           className="w-full bg-zinc-900 border border-zinc-800/30 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-[#1d9aef]"
                            value={subnet}
                            onChange={(e) => setSubnet(e.target.value)}
                            disabled={!connected || isLoading}
@@ -138,10 +138,10 @@ export function CreatePost({
                  </Button>
               </div>
 
-              <Button 
+               <Button 
                 onClick={handleSubmit} 
                 disabled={!content.trim() || !connected || isLoading || !mounted}
-                className="bg-[#1d9aef] hover:bg-[#1a8cd8] text-white rounded-full px-5 py-1.5 h-auto text-[15px] font-bold transition-all disabled:opacity-50"
+                className="bg-gradient-to-r from-[#1d9aef] to-[#0ea5e9] hover:shadow-[0_0_15px_rgba(29,154,239,0.3)] text-white rounded-full px-5 py-1.5 h-auto text-[14px] font-black transition-all disabled:opacity-50 border-none"
               >
                 {isLoading ? 'Posting...' : 'Post'}
               </Button>

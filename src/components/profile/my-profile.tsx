@@ -27,48 +27,48 @@ export function MyProfile({ username }: Props) {
   return (
     <div className="w-full border-b border-zinc-900 pb-4">
       {/* Banner */}
-      <div className="h-32 w-full bg-gradient-to-r from-zinc-800 to-zinc-900 relative">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+      <div className="h-24 w-full bg-gradient-to-r from-[#0c0c0e] to-[#18181b] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/80 to-transparent"></div>
       </div>
 
       {/* Profile Info */}
       <div className="px-4 relative">
         {/* Overlapping Avatar */}
-        <div className="absolute -top-16 left-4">
-          <div className="h-32 w-32 rounded-full border-4 border-black bg-black overflow-hidden ring-0">
+        <div className="absolute -top-12 left-4">
+          <div className="h-24 w-24 rounded-full border-4 border-[#050507] bg-black overflow-hidden shadow-2xl relative z-10">
             {data?.profile?.image ? (
               <Image
                 src={data.profile.image}
-                width={128}
-                height={128}
+                width={96}
+                height={96}
                 alt="avatar"
                 className="object-cover w-full h-full"
                 unoptimized
               />
             ) : (
-              <div className="h-full w-full bg-indigo-500 flex items-center justify-center text-white">
-                <User size={64} />
+              <div className="h-full w-full bg-gradient-to-br from-indigo-500 to-[#1d9aef] flex items-center justify-center text-white">
+                <User size={40} />
               </div>
             )}
           </div>
         </div>
 
-        {/* Action Buttons (Edit Profile, etc. if needed later) */}
-        <div className="flex justify-end pt-3 h-16">
+        {/* Action Buttons */}
+        <div className="flex justify-end pt-3 h-14">
           {mainUsername === (data?.profile?.username || username) && !isEditing && (
-            <Button onClick={() => setIsEditing(true)} variant="secondary" className="rounded-full font-medium h-9">
+            <Button onClick={() => setIsEditing(true)} variant="secondary" className="rounded-full font-bold h-8 text-[12px] px-4 border border-zinc-800/50 bg-zinc-900/50 hover:bg-zinc-800 transition-colors">
               Edit Profile
             </Button>
           )}
         </div>
 
-        {/* Name & Username */}
-        <div className="mt-2">
-          <h2 className="text-xl font-black text-white leading-tight">
+        <div className="mt-1">
+          <h2 className="text-lg font-black text-white tracking-tight leading-tight">
             {data?.profile?.username || username}
           </h2>
-          <div className="flex items-center gap-1 text-zinc-500">
-            <span className="text-[15px]">@{data?.walletAddress?.slice(0, 8)}...{data?.walletAddress?.slice(-4)}</span>
+          <div className="flex items-center gap-1.5 text-zinc-500">
+            <span className="text-[13px] font-medium">@{data?.walletAddress?.slice(0, 6)}...{data?.walletAddress?.slice(-4)}</span>
             {data?.walletAddress && (
               <div className="scale-75 origin-left">
                 <CopyPaste content={data.walletAddress} />
@@ -82,20 +82,19 @@ export function MyProfile({ username }: Props) {
           <Bio username={username} data={data} refetch={refetch} isEditing={isEditing} setIsEditing={setIsEditing} />
         </div>
 
-        {/* Stats */}
-        <div className="mt-3 flex flex-wrap gap-5 text-[15px] items-center">
-          <div className="hover:underline cursor-pointer flex gap-1 items-center">
-            <span className="font-bold text-white">{data?.socialCounts?.following || 0}</span>
-            <span className="text-zinc-500">Following</span>
+        <div className="mt-4 flex flex-wrap gap-4 text-[13px] items-center">
+          <div className="hover:underline cursor-pointer flex gap-1 items-center transition-colors">
+            <span className="font-bold text-white tracking-tight">{data?.socialCounts?.following || 0}</span>
+            <span className="text-zinc-500 font-medium">Following</span>
           </div>
-          <div className="hover:underline cursor-pointer flex gap-1 items-center">
-            <span className="font-bold text-white">{data?.socialCounts?.followers || 0}</span>
-            <span className="text-zinc-500">Followers</span>
+          <div className="hover:underline cursor-pointer flex gap-1 items-center transition-colors">
+            <span className="font-bold text-white tracking-tight">{data?.socialCounts?.followers || 0}</span>
+            <span className="text-zinc-500 font-medium">Followers</span>
           </div>
           {fairScore !== null && (
-            <div className="flex gap-1.5 items-center px-2 py-0.5 bg-[#1d9aef]/10 text-[#1d9aef] rounded-full text-sm font-semibold border border-[#1d9aef]/20">
-              <Activity size={14} className="animate-pulse" />
-              <span>{isScoreLoading ? '...' : fairScore} FairScore</span>
+            <div className="flex gap-1.5 items-center px-2.5 py-1 bg-[#1d9aef]/5 text-[#1d9aef] rounded-lg text-[11px] font-black uppercase tracking-wider border border-[#1d9aef]/10 shadow-sm transition-all hover:bg-[#1d9aef]/10">
+              <Activity size={12} className="animate-pulse" />
+              <span>{isScoreLoading ? '...' : fairScore} Reputation</span>
             </div>
           )}
         </div>

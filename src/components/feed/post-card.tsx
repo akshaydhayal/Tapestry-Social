@@ -128,7 +128,7 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
   return (
     <article 
       onClick={() => router.push(`/post/${post.id}`)}
-      className="border-b border-zinc-900 hover:bg-white/[0.02] transition-colors cursor-pointer px-4 pt-3 pb-3 flex gap-3 group"
+      className="border-b border-[#3f3f46] hover:bg-white/[0.01] transition-all duration-200 cursor-pointer px-[14px] py-2.5 flex gap-3 group/post"
     >
       <div 
         onClick={handleUserClick}
@@ -136,11 +136,11 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
       >
         <ProfileHoverCard username={post.author.username}>
           <div className="inline-block">
-            <Avatar className="h-10 w-10 ring-0 hover:opacity-80 transition-opacity">
+            <Avatar className="h-9 w-9 ring-1 ring-zinc-800/50 hover:opacity-90 transition-opacity">
               {post.author.avatarUrl ? (
                 <Image src={post.author.avatarUrl} alt={post.author.username} fill className="object-cover" />
               ) : (
-                <div className="h-full w-full bg-gradient-to-br from-[#1d9aef] to-cyan-500 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="h-full w-full bg-gradient-to-br from-indigo-500 to-[#1d9aef] rounded-full flex items-center justify-center text-white font-bold text-sm">
                   {post.author.username.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -155,33 +155,33 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
             <ProfileHoverCard username={post.author.username}>
               <span 
                 onClick={handleUserClick}
-                className="font-bold text-[15px] text-white hover:underline truncate relative z-10 inline-block cursor-pointer"
+                className="font-bold text-[14px] text-zinc-100 group-hover/post:text-white transition-colors hover:underline truncate relative z-10 inline-block cursor-pointer"
               >
                 {post.author.username}
               </span>
             </ProfileHoverCard>
             <span 
               onClick={handleUserClick}
-              className="text-[15px] text-zinc-500 truncate max-w-[120px]"
+              className="text-[13px] text-zinc-500 truncate max-w-[100px] font-medium"
             >
               @{post.author.walletAddress.slice(0,4)}...{post.author.walletAddress.slice(-4)}
             </span>
-            <span className="text-[15px] text-zinc-500">·</span>
-            <span className="text-[15px] text-zinc-500 hover:underline">{mounted ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '...'}</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-[13px] text-zinc-500 hover:text-zinc-400">{mounted ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '...'}</span>
           </div>
           
           {!hideSubnet && post.subnet && (
-            <Badge variant="secondary" className="bg-[#1d9aef]/10 text-[#1d9aef] border border-transparent px-2 py-0 hover:bg-[#1d9aef]/20 transition-colors whitespace-nowrap text-xs ml-2">
+            <Badge variant="secondary" className="bg-[#1d9aef]/5 text-[#1d9aef] border border-[#1d9aef]/10 px-1.5 py-0 hover:bg-[#1d9aef]/15 transition-colors whitespace-nowrap text-[10px] font-black uppercase tracking-tight ml-2">
               {post.subnet}
             </Badge>
           )}
         </div>
 
         {title && (
-          <h3 className="text-lg font-bold text-white mb-1.5 leading-snug tracking-wide">{title}</h3>
+          <h3 className="text-[16px] font-black text-white mb-1 leading-snug tracking-tight">{title}</h3>
         )}
         {textContent && (
-          <div className="text-[15px] text-zinc-100 mb-3 leading-normal whitespace-pre-wrap break-words">
+          <div className="text-[14px] text-zinc-300 mb-2.5 leading-relaxed whitespace-pre-wrap break-words font-inter">
             {textContent}
           </div>
         )}
@@ -201,14 +201,14 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
           </div>
         )}
 
-        <div className="flex items-center gap-12 mt-1 text-zinc-500 group-hover:text-zinc-500">
+        <div className="flex items-center gap-9 mt-1 text-zinc-500">
           <button 
             onClick={(e) => { e.stopPropagation(); setShowCommentBox(!showCommentBox); }}
-            className="flex items-center gap-2 text-[13px] hover:text-[#1d9aef] transition-colors group/btn"
+            className="flex items-center gap-1.5 text-[12px] font-semibold hover:text-[#1d9aef] transition-all group/btn"
             disabled={!mounted}
           >
-            <div className="p-2 rounded-full group-hover/btn:bg-[#1d9aef]/10 transition-colors -ml-2">
-               {mounted && <MessageCircle className="h-[18px] w-[18px]" />}
+            <div className="p-1.5 rounded-full group-hover/btn:bg-[#1d9aef]/10 transition-colors -ml-1.5">
+               {mounted && <MessageCircle className="h-[17px] w-[17px]" />}
             </div>
             <span>{commentsCount}</span>
           </button>
@@ -216,12 +216,12 @@ export function PostCard({ post, hideSubnet }: { post: PostProps, hideSubnet?: b
           <button 
             onClick={(e) => handleLike(e)}
             disabled={isLiking || !mounted}
-            className={`flex items-center gap-2 text-[13px] transition-colors group/btn ${isLiked ? 'text-[#f91880]' : 'hover:text-[#f91880]'}`}
+            className={`flex items-center gap-1.5 text-[12px] font-semibold transition-all group/btn ${isLiked ? 'text-rose-500' : 'hover:text-rose-500'}`}
           >
-            <div className={`p-2 rounded-full transition-colors ${isLiked ? '' : 'group-hover/btn:bg-[#f91880]/10'}`}>
-                {mounted && <Heart className={`h-[18px] w-[18px] ${isLiked ? 'fill-current' : ''}`} />}
+            <div className={`p-1.5 rounded-full transition-colors ${isLiked ? '' : 'group-hover/btn:bg-rose-500/10'}`}>
+                {mounted && <Heart className={`h-[17px] w-[17px] ${isLiked ? 'fill-current' : ''}`} />}
             </div>
-            <span className={isLiked ? '' : ''}>{likesCount}</span>
+            <span>{likesCount}</span>
           </button>
         </div>
 

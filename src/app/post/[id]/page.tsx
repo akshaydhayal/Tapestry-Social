@@ -2,7 +2,7 @@
 
 import { Feed } from '@/components/feed/feed'
 import { PostCard, PostProps } from '@/components/feed/post-card'
-import { RightSidebar } from '@/components/common/right-sidebar'
+
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -171,9 +171,9 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div className="flex w-full justify-center lg:justify-start lg:gap-8 max-w-[1265px] mx-auto relative">
-      <main className="w-full sm:w-[600px] min-h-[200vh] border-x border-zinc-900 shrink-0 pb-24">
-        <div className="sticky top-0 bg-black/80 backdrop-blur-md z-10 border-b border-zinc-900 flex items-center gap-6 px-4 py-3">
+    <div className="flex w-full justify-center lg:justify-start lg:gap-8 mx-auto relative bg-black">
+      <main className="w-full sm:flex-1 min-h-[200vh] border-x border-[#3f3f46] shrink-0 pb-24 bg-black">
+        <div className="sticky top-0 bg-black/80 backdrop-blur-md z-10 border-b border-[#3f3f46] flex items-center gap-6 px-4 py-3">
           <button 
             onClick={() => router.back()}
             className="p-2 hover:bg-zinc-800 rounded-full transition-colors text-white"
@@ -240,7 +240,6 @@ export default function PostDetailPage() {
         ) : null}
       </main>
 
-      <RightSidebar />
     </div>
   )
 }

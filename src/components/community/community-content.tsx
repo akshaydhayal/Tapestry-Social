@@ -10,7 +10,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { Feed } from '@/components/feed/feed'
 import { PostProps } from '@/components/feed/post-card'
 import { CreateCommunityPostModal } from './create-community-post-modal'
-import { RightSidebar } from '@/components/common/right-sidebar'
+
 import { useGetFollowersState } from '@/components/profile/hooks/use-get-follower-state'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useFairScore } from '@/hooks/use-fairscore'
@@ -165,34 +165,35 @@ export function CommunityContent({ communityProfile }: Props) {
     }
   }
 
-  const memberCount = communityProfile.socialCounts?.followerCount || 0
+  const memberCount = communityProfile.socialCounts?.followers || 0
 
   return (
-    <div className="flex w-full min-h-screen">
-      <main className="flex-1 max-w-[600px] w-full border-x border-zinc-900 flex flex-col h-screen">
+    <div className="flex w-full min-h-screen bg-black">
+      <main className="flex-1 w-full border-x border-[#3f3f46] flex flex-col h-screen bg-black">
         {/* Community Header (Sticky) */}
-        <header className="sticky top-0 z-20 bg-zinc-950 border-b border-zinc-900 shrink-0 shadow-lg relative">
+        <header className="sticky top-0 z-20 bg-black/60 backdrop-blur-xl border-b border-white/5 shrink-0 shadow-2xl relative">
           {/* Banner Placeholder */}
-          <div className="h-20 w-full bg-gradient-to-r from-zinc-800 to-zinc-900 absolute top-0 left-0 right-0 overflow-hidden">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+          <div className="h-18 w-full bg-gradient-to-r from-[#0c0c0e] to-[#121214] absolute top-0 left-0 right-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+            <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/80 to-transparent"></div>
           </div>
           
-          <div className="relative pt-6 px-4 pb-4">
+          <div className="relative pt-4 px-4 pb-3">
             <div className="flex items-end justify-between">
               {/* Profile Image & Name */}
-              <div className="flex items-end gap-3 translate-y-1">
-                 <div className="h-16 w-16 flex-shrink-0 rounded-2xl bg-zinc-900 flex items-center justify-center text-2xl border-2 border-zinc-950 shadow-xl overflow-hidden relative z-10">
+              <div className="flex items-end gap-3 translate-y-0.5">
+                 <div className="h-14 w-14 flex-shrink-0 rounded-2xl bg-[#0c0c0e] flex items-center justify-center text-xl border border-white/10 shadow-2xl overflow-hidden relative z-10 p-0.5">
                    {image ? (
-                     <Image src={image} alt={name} fill unoptimized className="object-cover" />
+                     <Image src={image} alt={name} fill unoptimized className="object-cover rounded-[14px]" />
                    ) : (
-                     <Hash className="h-6 w-6 text-[#1d9aef]" />
+                     <Hash className="h-5 w-5 text-[#1d9aef]" />
                    )}
                  </div>
                  <div className="flex flex-col pb-0.5">
                     <div className="flex items-center gap-1.5">
-                      <h1 className="text-lg font-black text-white">{name}</h1>
+                      <h1 className="text-base font-black text-white tracking-tight">{name}</h1>
                     </div>
-                    <span className="text-[12px] text-zinc-400 font-medium">@{username}</span>
+                    <span className="text-[11px] text-zinc-500 font-bold uppercase tracking-tighter">@{username}</span>
                  </div>
               </div>
 
@@ -205,16 +206,20 @@ export function CommunityContent({ communityProfile }: Props) {
                 <Button 
                   onClick={handleJoin} 
                   disabled={isJoined || stateLoading || followLoading || scoreLoading || !mainUsername}
-                  className={`h-8 px-4 text-xs font-bold rounded-full transition-all ${isJoined ? 'bg-zinc-800 text-white hover:bg-zinc-700 cursor-default border border-zinc-700' : 'bg-white text-black hover:bg-zinc-200 shadow-md'}`}
+                  className={`h-9 px-6 text-sm font-bold rounded-full transition-all duration-200 transform active:scale-95 ${
+                    isJoined 
+                      ? 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800 shadow-inner' 
+                      : 'bg-gradient-to-b from-white to-zinc-200 text-black hover:to-white shadow-[0_4px_12px_rgba(255,255,255,0.15)] hover:shadow-[0_6px_16px_rgba(255,255,255,0.2)]'
+                  }`}
                 >
-                  {stateLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin mx-2" /> : isJoined ? 'Joined' : 'Join Group'}
+                  {stateLoading ? <Loader2 className="h-4 w-4 animate-spin mx-2" /> : isJoined ? 'Joined' : 'Join Group'}
                 </Button>
               </div>
             </div>
             
-            <div className="mt-4 space-y-2">
+            <div className="mt-3.5 space-y-1.5">
               {bio && (
-                <p className="text-[13px] text-zinc-300 leading-snug">
+                <p className="text-[12px] text-zinc-400 leading-relaxed font-medium">
                   {bio}
                 </p>
               )}
@@ -290,7 +295,6 @@ export function CommunityContent({ communityProfile }: Props) {
         </div>
       </main>
       
-      <RightSidebar />
     </div>
   )
 }

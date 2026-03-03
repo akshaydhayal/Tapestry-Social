@@ -49,7 +49,7 @@ export function CreateCommunityPostModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#1d9aef] hover:bg-[#1a8cd8] text-white shadow-md font-bold rounded-full text-sm h-9 px-5 transition-all">
+        <Button className="bg-gradient-to-r from-[#1d9aef] to-[#0ea5e9] hover:from-[#1a8cd8] hover:to-[#0284c7] text-white shadow-[0_0_20px_rgba(29,154,239,0.3)] hover:shadow-[0_0_25px_rgba(29,154,239,0.4)] font-bold rounded-full text-sm h-9 px-6 transition-all duration-200 transform hover:scale-105 active:scale-95 border border-[#1d9aef]/20">
           Create Post
         </Button>
       </DialogTrigger>

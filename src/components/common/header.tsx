@@ -17,51 +17,51 @@ export function Header() {
   }, [])
 
   const popularCommunities = profiles
-    ? profiles.filter((p: any) => p.profile?.username?.startsWith('Community_') || p.profile?.bio?.includes('"isCommunity":true')).slice(0, 4)
+    ? (Array.isArray(profiles) ? profiles : []).filter((p: any) => p.profile?.username?.startsWith('Community_') || p.profile?.bio?.includes('"isCommunity":true')).slice(0, 4)
     : []
 
   return (
-    <header className="hidden sm:flex flex-col w-[88px] xl:w-[275px] h-screen sticky top-0 pb-4 pt-1 px-2 xl:px-4 border-r border-zinc-900 justify-start shrink-0">
+    <header className="hidden sm:flex flex-col w-[88px] xl:w-[230px] h-screen sticky top-0 pb-4 pt-1 px-2 xl:px-4 border-r border-[#3f3f46] bg-[#050507] justify-start shrink-0 z-50">
       <div className="flex flex-col gap-2 xl:gap-1 items-center xl:items-start w-full">
         <Link 
           href="/" 
-          className="flex items-center justify-center hover:bg-zinc-900 transition-colors mt-4 mb-6 text-2xl font-bold font-serif"
+          className="flex items-center justify-center hover:bg-zinc-900/50 transition-colors mt-6 mb-8 text-xl font-black bg-gradient-to-br from-white to-zinc-500 bg-clip-text text-transparent px-2"
           title="Tapestry Social"
         >
-          Tapestry Social
+          Tapestry
         </Link>
 
         <nav className="flex flex-col gap-1 w-full items-center xl:items-start">
           <Link
             href="/"
-            className="flex items-center gap-2 p-3 xl:pr-6 rounded-full hover:bg-zinc-900 transition-colors w-fit xl:w-auto"
+            className="flex items-center gap-3 p-2.5 xl:pr-6 rounded-xl hover:bg-zinc-900/50 transition-all group w-fit xl:w-full"
           >
-            {mounted && <Home className="h-6 w-6" strokeWidth={2.5} />}
-            <span className="hidden xl:inline text-lg font-medium">Home</span>
+            {mounted && <Home className="h-5 w-5 text-zinc-400 group-hover:text-[#1d9aef] transition-colors" strokeWidth={2.5} />}
+            <span className="hidden xl:inline text-[15px] font-semibold text-zinc-300 group-hover:text-white transition-colors">Home</span>
           </Link>
           
           <Link
             href="/communities"
-            className="flex items-center gap-2 p-3 xl:pr-6 rounded-full hover:bg-zinc-900 transition-colors w-fit xl:w-auto"
+            className="flex items-center gap-3 p-2.5 xl:pr-6 rounded-xl hover:bg-zinc-900/50 transition-all group w-fit xl:w-full"
           >
-            {mounted && <Users className="h-6 w-6" strokeWidth={2.5} />}
-            <span className="hidden xl:inline text-lg font-medium">Communities</span>
+            {mounted && <Users className="h-5 w-5 text-zinc-400 group-hover:text-[#1d9aef] transition-colors" strokeWidth={2.5} />}
+            <span className="hidden xl:inline text-[15px] font-semibold text-zinc-300 group-hover:text-white transition-colors">Communities</span>
           </Link>
 
           {mounted && mainUsername && (
             <Link
               href={`/${mainUsername}`}
-              className="flex items-center gap-2 p-3 xl:pr-6 rounded-full hover:bg-zinc-900 transition-colors w-fit xl:w-auto"
+              className="flex items-center gap-3 p-2.5 xl:pr-6 rounded-xl hover:bg-zinc-900/50 transition-all group w-fit xl:w-full"
             >
-              <User className="h-6 w-6" strokeWidth={2.5} />
-              <span className="hidden xl:inline text-lg font-medium">Profile</span>
+              <User className="h-5 w-5 text-zinc-400 group-hover:text-[#1d9aef] transition-colors" strokeWidth={2.5} />
+              <span className="hidden xl:inline text-[15px] font-semibold text-zinc-300 group-hover:text-white transition-colors">Profile</span>
             </Link>
           )}
         </nav>
 
         {/* Popular Communities Section */}
-        <div className="hidden xl:flex flex-col gap-2 mt-8 px-2 w-full">
-          <h3 className="text-[13px] font-black text-zinc-500 tracking-widest uppercase px-1">
+        <div className="hidden xl:flex flex-col gap-2 mt-10 px-0 w-full">
+          <h3 className="text-[11px] font-black text-zinc-500 tracking-wider uppercase px-2 mb-1">
             Popular Communities
           </h3>
           <div className="flex flex-col gap-1">
@@ -80,17 +80,19 @@ export function Header() {
               const isRestricted = meta.gateType === 'fairscore' && meta.fairScoreGate > 0
 
               return (
-                <Link href={`/${username}`} key={idx} className="group flex items-center justify-between py-2 px-2 rounded-xl transition-all hover:bg-zinc-900 border border-transparent hover:border-zinc-800">
-                  <div className="flex flex-col max-w-[130px]">
-                    <span className="text-[14px] font-bold text-zinc-200 group-hover:text-white transition-colors truncate flex items-center gap-1.5">
-                      {mounted && <Hash className="h-3 w-3 text-[#1d9aef]" />} {name}
+                <Link href={`/${username}`} key={idx} className="group flex flex-col gap-1.5 py-2.5 px-2 rounded-xl transition-all hover:bg-zinc-900 border border-transparent hover:border-zinc-800">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    {mounted && <Hash className="h-3.5 w-3.5 text-[#1d9aef] shrink-0" />}
+                    <span className="text-[14px] font-bold text-zinc-200 group-hover:text-white transition-colors truncate">
+                      {name}
                     </span>
-                    <span className="text-[10px] text-zinc-500 truncate mt-0.5 group-hover:text-zinc-400">@{username}</span>
                   </div>
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded border shadow-sm flex items-center gap-1 ${isRestricted ? 'bg-amber-950/30 text-amber-500 border-amber-900/50' : 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50'}`}>
-                    {isRestricted ? (mounted && <Lock className="w-2.5 h-2.5" />) : (mounted && <Globe className="w-2.5 h-2.5" />)}
-                    {isRestricted ? `Rep > ${meta.fairScoreGate}` : 'Public'}
-                  </span>
+                  <div className="flex items-center">
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border shadow-sm flex items-center gap-1 uppercase tracking-tighter ${isRestricted ? 'bg-amber-950/30 text-amber-500 border-amber-900/50' : 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50'}`}>
+                      {isRestricted ? (mounted && <Lock className="w-2.5 h-2.5" />) : (mounted && <Globe className="w-2.5 h-2.5" />)}
+                      {isRestricted ? `Rep > ${meta.fairScoreGate}` : 'Public'}
+                    </span>
+                  </div>
                 </Link>
               )
             }) : (

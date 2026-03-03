@@ -8,7 +8,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { Loader2 } from 'lucide-react'
 import { useFollowEvent } from '@/hooks/use-follow-event'
 
-import { RightSidebar } from '@/components/common/right-sidebar'
+
 
 export default function HomeFeedPage() {
   const [posts, setPosts] = useState<PostProps[]>([])
@@ -156,8 +156,8 @@ export default function HomeFeedPage() {
   return (
     <div className="flex w-full min-h-screen">
       {/* Main Feed Content */}
-      <main className="flex-1 max-w-[600px] w-full border-x border-zinc-900 pb-20">
-        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-zinc-900 flex flex-col pt-2 cursor-pointer">
+      <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black">
+        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#3f3f46] flex flex-col pt-2 cursor-pointer">
           <div className="flex w-full h-14">
             <button 
               onClick={() => setFeedType('global')}
@@ -197,8 +197,6 @@ export default function HomeFeedPage() {
         </div>
       </main>
 
-      {/* Right Sidebar Component */}
-      <RightSidebar />
     </div>
   )
 }

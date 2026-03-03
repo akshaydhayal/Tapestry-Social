@@ -3,7 +3,7 @@
 import { MyProfile } from '@/components/profile/my-profile'
 import { PublicKey } from '@solana/web3.js'
 import { useEffect, useState, useCallback } from 'react'
-import { RightSidebar } from '@/components/common/right-sidebar'
+
 import { Feed } from '@/components/feed/feed'
 import { PostProps } from '@/components/feed/post-card'
 import { Loader2 } from 'lucide-react'
@@ -189,9 +189,9 @@ export function ProfileContent({ username }: Props) {
   }
 
   return (
-    <div className="flex w-full min-h-screen">
-      <main className="flex-1 max-w-[600px] w-full border-x border-zinc-900 pb-20">
-        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-zinc-900 px-4 h-14 flex items-center gap-6">
+    <div className="flex w-full min-h-screen bg-black">
+      <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black">
+        <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#3f3f46] px-4 h-14 flex items-center gap-6">
           <h1 className="text-xl font-bold text-white truncate">Profile</h1>
         </header>
 
@@ -199,7 +199,7 @@ export function ProfileContent({ username }: Props) {
 
         {/* Posts Feed */}
         <div className="mt-2">
-          <div className="px-4 py-3 border-b border-zinc-900">
+          <div className="px-4 py-3 border-b border-[#3f3f46]">
             <h3 className="text-[15px] font-bold text-white relative w-fit">
               Posts
               <div className="absolute -bottom-3 left-0 right-0 h-1 bg-[#1d9aef] rounded-full" />
@@ -218,7 +218,6 @@ export function ProfileContent({ username }: Props) {
         </div>
       </main>
 
-      <RightSidebar />
     </div>
   )
 }
