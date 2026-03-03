@@ -1,6 +1,6 @@
 # Tapestry Social: On-Chain Community Platform
 
-![Tapestry Social Hero](./docs/screenshots/hero_placeholder.png)
+Live Project Link: [https://tapestry-social.vercel.app/](https://tapestry-social.vercel.app/)
 
 Tapestry Social is a fully-featured decentralized social platform built on Solana, powered by the **Tapestry Protocol**. It enables users to build vibrant communities, share content dynamically, and manage on-chain identities with a strong focus on reputation and gated access.
 
@@ -21,6 +21,7 @@ Tapestry Social is a fully-featured decentralized social platform built on Solan
 - **CRUD Operations**: Users can seamlessly edit and delete posts dynamically.
 
 ![Feed Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/discover.png)
+![Feed Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/communtiy_page.png)
 
 ### 3. **Decentralized Identity & Profiles**
 - **Solana Wallet Integration**: Full support for Solana wallets via Privy/Standard Adapters.
@@ -29,6 +30,8 @@ Tapestry Social is a fully-featured decentralized social platform built on Solan
 - **User Following Strategy**: On-chain user relationships leveraging Tapestry Social Graph.
 
 ![Profile UI Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/profile.png)
+![Profile UI Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/create-profile.png)
+
 
 ### 4. **Gated Communities & FairScore Ecosystem**
 Create and join niche communities that are gated natively by on-chain reputation logic.
