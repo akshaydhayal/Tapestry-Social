@@ -48,7 +48,9 @@ export default function CommunitiesDirectory() {
               const name = meta?.name || username.replace('Community_', '')
               const description = getCommunityDescription(community.profile?.bio, meta)
 
-              const isRestricted = meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0
+              // DEMO OVERRIDE: hardcode uidesigners as gated
+              const isDemoGated = username === 'Community_uidesigners'
+              const isRestricted = isDemoGated || (meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0)
               const image = community.profile?.image
 
               return (

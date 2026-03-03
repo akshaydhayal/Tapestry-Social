@@ -34,8 +34,12 @@ export function CommunityContent({ communityProfile }: Props) {
   const bio = getCommunityDescription(communityProfile?.profile?.bio, meta)
   const username = communityProfile.profile.username
   const name = meta?.name || username.replace('Community_', '')
-  const isGated = meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0
-  const gateScore = meta?.fairScoreGate || 0
+  // DEMO OVERRIDE: hardcode uidesigners as gated with score 200
+  const DEMO_GATED_COMMUNITY = 'Community_uidesigners'
+  const DEMO_GATE_SCORE = 200
+  const isDemoGated = username === DEMO_GATED_COMMUNITY
+  const isGated = isDemoGated || (meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0)
+  const gateScore = isDemoGated ? DEMO_GATE_SCORE : (meta?.fairScoreGate || 0)
   const image = communityProfile.profile.image
 
   // Membership & Score validation

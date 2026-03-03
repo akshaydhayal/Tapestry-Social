@@ -77,7 +77,10 @@ export function Header() {
                 }
               } catch {}
 
-              const isRestricted = meta.gateType === 'fairscore' && meta.fairScoreGate > 0
+              // DEMO OVERRIDE: hardcode uidesigners as gated
+              const isDemoGated = username === 'Community_uidesigners'
+              const isRestricted = isDemoGated || (meta.gateType === 'fairscore' && meta.fairScoreGate > 0)
+              const displayGateScore = isDemoGated ? 200 : (meta.fairScoreGate || 0)
 
               return (
                 <Link href={`/${username}`} key={idx} className="group flex flex-col gap-1.5 py-2.5 px-2 rounded-xl transition-all hover:bg-zinc-900 border border-transparent hover:border-zinc-800">
@@ -90,7 +93,7 @@ export function Header() {
                   <div className="flex items-center">
                     <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border shadow-sm flex items-center gap-1 uppercase tracking-tighter ${isRestricted ? 'bg-amber-950/30 text-amber-500 border-amber-900/50' : 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50'}`}>
                       {isRestricted ? (mounted && <Lock className="w-2.5 h-2.5" />) : (mounted && <Globe className="w-2.5 h-2.5" />)}
-                      {isRestricted ? `Rep > ${meta.fairScoreGate}` : 'Public'}
+                      {isRestricted ? `Rep > ${displayGateScore}` : 'Public'}
                     </span>
                   </div>
                 </Link>
