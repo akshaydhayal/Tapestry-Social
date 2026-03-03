@@ -1,82 +1,79 @@
-# Tapestry Social 
+# Tapestry Social: On-Chain Community Platform
 
-Welcome to **Tapestry Social**! A decentralized social platform and community builder powered by the Tapestry protocol on Solana. This repository was built for the Graveyard Hackathon Onchain Social track.
+![Tapestry Social Hero](./docs/screenshots/home_feed.png)
 
-## User Journey
+Tapestry Social is a decentralized social platform built on Solana, powered by the **Tapestry Protocol**. It enables users to build communities, share content, and manage on-chain identities with a focus on reputation and gated access.
 
-### 1. Clone the Repo
+## ✨ Key Features
 
-Clone the repository in your preferred code editor to start working with the code locally. Use the following commands:
+### 1. **On-Chain Social Graph**
+Powered by Tapestry, every follow, post, and community interaction is recorded on the social graph, ensuring data ownership and interoperability across the Solana ecosystem.
 
+### 2. **Gated Communities (FairScore)**
+Create and join niche communities that are gated by on-chain reputation.
+- **FairScore Integration**: Access is based on a verifiable reputation score, filtering for high-quality members.
+- **Dynamic Gating**: Community leads can set and update reputation requirements in real-time.
+
+### 3. **Persistent & Expansive UI**
+- **Modern 3-Column Layout**: A full-width, expansive design with ultra-high contrast visual separation (`#3F3F46` borders).
+- **Persistent Sidebars**: Sidebars remain mounted across page transitions for zero-reloand navigation, providing a fluid, app-like experience.
+- **Optimized Performance**: Built with Next.js App Router for blazing fast load times.
+
+### 4. **Rich Content & Subnets**
+- **Markdown & Image Support**: Posts support rich text and image URLs.
+- **Community Subnets**: Posts are automatically categorized into community-specific subnets, keeping global and local feeds organized.
+
+### 5. **Decentralized Identity**
+- **Solana Wallet Integration**: Full support for Solana wallets via standard adapters.
+- **Reputation-Centric Profiles**: Profiles prominently display decentralized reputation (FairScore) and follower counts.
+
+## 📸 Demo Gallery
+
+| Home Feed | Discover Communities |
+|-----------|----------------------|
+| ![Home Feed](./docs/screenshots/home_feed.png) | ![Discover](./docs/screenshots/discover_communities.png) |
+
+| Community Hub | User Profile |
+|---------------|--------------|
+| ![Community](./docs/screenshots/community_profile.png) | ![Profile](./docs/screenshots/user_profile.png) |
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Blockchain**: [Solana](https://solana.com/)
+- **Protocol**: [Tapestry](https://usetapestry.dev/)
+- **Styling**: Vanilla CSS + [Tailwind CSS](https://tailwindcss.com/)
+- **Auth**: [Privy](https://privy.io/) / Wallet-based
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- Node.js 18+
+- pnpm or npm
+
+### 2. Installation
 ```bash
 git clone https://github.com/Primitives-xyz/solana-starter-kit
-cd solana-starter-kit
-```
-
-### 2. Get API Keys
-
-At this stage, you need to sign up for API keys from each infrastructure partner required for your project. Use the links below to sign up:
-
-- **Privy**: Web3 authentication and embedded wallet infrastructure – <a href="https://dashboard.privy.io" target="_blank">Sign up for Privy</a>
-- **Tapestry**: Social graph and onchain identity API – <a href="https://app.usetapestry.dev/" target="_blank">Get Early Access at Tapestry</a>
-- **Jupiter**: Open source liquidity and trading API – <a href="https://portal.jup.ag" target="_blank">Get your Jupiter API key</a>
-- **Helius**: Real-time Solana RPC platform - <a href="https://dashboard.helius.dev/" target="_blank">Sign up at Helius</a>
-
-### 3. Configure Environment
-
-Rename the `.env.example` file to `.env.local` and update it with your API credentials:
-
-```bash
-cp .env.example .env.local
-```
-
-Then open the `.env.local` file and replace the placeholder values with your actual API keys. For Next.js applications, any environment variables used in the browser must be prefixed with `NEXT_PUBLIC_`.
-
-### 4. Add Docs to Cursor
-
-Navigate to Cursor > Cursor Settings > Features > Docs
-
-Add the following docs URLs so Cursor can access them at any time:
-
-- **Privy**: https://docs.privy.io/
-
-- **Tapestry**: https://docs.usetapestry.dev/api
-
-- **Zerion**: https://developers.zerion.io/reference/intro/getting-started
-
-- **0x**: https://0x.org/docs/api
-
-- **Helius**: https://docs.helius.dev/
-
-### 5. Install Dependencies and Get Started
-
-Install dependencies and run the development server to begin coding:
-
-```bash
+cd gated-subnets-app
 pnpm install
+```
+
+### 3. Configuration
+Rename `.env.example` to `.env.local` and add your keys:
+```bash
+NEXT_PUBLIC_HELIUS_API_KEY=your_key
+NEXT_PUBLIC_PRIVY_APP_ID=your_key
+```
+
+### 4. Run Development Server
+```bash
 pnpm run dev
 ```
 
-Now you're all set to start coding! Begin by exploring the codebase, and use our documentation to guide your development.
+## 📜 Contributing
+Contributions are welcome! Please feel free to submit issues or pull requests to help improve the Tapestry ecosystem.
 
-## NFT Portfolio Viewer Setup
-
-For the NFT portfolio viewer to work correctly, you need to obtain a Helius API key:
-
-1. Visit [Helius Developer Portal](https://dev.helius.xyz/dashboard) and create an account
-2. Create a new API key
-3. Add the key to your `.env.local` file:
-
-```
-NEXT_PUBLIC_HELIUS_API_KEY=your_api_key_here
-```
-
-This allows the application to fetch NFT data from the Solana blockchain using Helius's DAS API.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions to Tapestry Social are welcome! By contributing, you agree that your contributions will be licensed under the MIT License. Please feel free to submit issues, fork the repository, and create pull requests.
+## ⚖️ License
+This project is licensed under the MIT License.

@@ -197,8 +197,8 @@ export function CommunityContent({ communityProfile }: Props) {
                  </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-2 relative z-10">
+               {/* Actions */}
+              <div className="flex items-center gap-3 relative z-10">
                 {canPost && (
                   <CreateCommunityPostModal onSubmit={handleCreatePost} communityName={name} />
                 )}
@@ -206,10 +206,10 @@ export function CommunityContent({ communityProfile }: Props) {
                 <Button 
                   onClick={handleJoin} 
                   disabled={isJoined || stateLoading || followLoading || scoreLoading || !mainUsername}
-                  className={`h-9 px-6 text-sm font-bold rounded-full transition-all duration-200 transform active:scale-95 ${
+                  className={`h-8 px-5 text-[13px] font-black rounded-full transition-all duration-300 transform active:scale-95 border uppercase tracking-wider ${
                     isJoined 
-                      ? 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800 shadow-inner' 
-                      : 'bg-gradient-to-b from-white to-zinc-200 text-black hover:to-white shadow-[0_4px_12px_rgba(255,255,255,0.15)] hover:shadow-[0_6px_16px_rgba(255,255,255,0.2)]'
+                      ? 'bg-zinc-950 text-zinc-500 border-zinc-800/80 cursor-default grayscale' 
+                      : 'bg-white text-black hover:bg-zinc-100 border-white shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]'
                   }`}
                 >
                   {stateLoading ? <Loader2 className="h-4 w-4 animate-spin mx-2" /> : isJoined ? 'Joined' : 'Join Group'}
@@ -217,27 +217,33 @@ export function CommunityContent({ communityProfile }: Props) {
               </div>
             </div>
             
-            <div className="mt-3.5 space-y-1.5">
+            {/* Beautiful Community Bio Section */}
+            <div className="mt-6 flex flex-col gap-4">
               {bio && (
-                <p className="text-[12px] text-zinc-400 leading-relaxed font-medium">
-                  {bio}
-                </p>
+                <div className="relative">
+                  <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-[#1d9aef] to-transparent rounded-full opacity-50"></div>
+                  <p className="text-[14px] md:text-[15px] text-zinc-300 leading-relaxed font-semibold italic pl-1 max-w-2xl drop-shadow-sm">
+                    {bio}
+                  </p>
+                </div>
               )}
               
-              <div className="flex items-center gap-4 text-[12px] text-zinc-400 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <span className="text-white font-bold">{memberCount}</span> Members
+              <div className="flex items-center gap-5 text-[11px] text-zinc-500 font-bold uppercase tracking-widest bg-zinc-950/30 w-fit px-3 py-1.5 rounded-lg border border-white/5">
+                <span className="flex items-center gap-2">
+                  <span className="text-white font-black">{memberCount}</span> 
+                  <span className="opacity-60">Members</span>
                 </span>
-                <span className="flex items-center gap-1">
+                <div className="w-px h-3 bg-zinc-800"></div>
+                <span className="flex items-center gap-2">
                   {isGated ? (
                     <>
                       <Lock className="h-3 w-3 text-amber-500" />
-                      <span className="text-amber-500/90 font-semibold">Rep &gt; {gateScore}</span>
+                      <span className="text-amber-500/90">Rep &gt; {gateScore}</span>
                     </>
                   ) : (
                     <>
                       <Globe className="h-3 w-3 text-emerald-500" />
-                      <span className="text-emerald-500/90 font-semibold">Public</span>
+                      <span className="text-emerald-500/90">Open Group</span>
                     </>
                   )}
                 </span>

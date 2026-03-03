@@ -6,9 +6,7 @@ import { PostProps } from '@/components/feed/post-card'
 import { useState, useEffect, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Loader2 } from 'lucide-react'
-import { useFollowEvent } from '@/hooks/use-follow-event'
-
-
+import { useProfileStore } from '@/store/profile'
 
 export default function HomeFeedPage() {
   const [posts, setPosts] = useState<PostProps[]>([])
@@ -17,13 +15,14 @@ export default function HomeFeedPage() {
   const [feedType, setFeedType] = useState<'following' | 'global'>('global')
   const [mounted, setMounted] = useState(false)
   const { connected, publicKey } = useWallet()
+  const { mainUsername } = useProfileStore()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
   const fetchPosts = useCallback(async () => {
-    console.log(`Fetching ${feedType} feed...`)
-    setPosts([]) // Clear current posts to show loading/empty state during transition
+    setPosts([])
     setIsLoadingFeed(true)
     const endpoint = feedType === 'global' 
       ? `/api/contents/feed?t=${Date.now()}` 
@@ -58,13 +57,11 @@ export default function HomeFeedPage() {
             if (imgMatch) imageUrlValue = imgMatch[1];
         }
         
-        // Check for top-level imageUrl returned by Tapestry API
         if (!imageUrlValue && item.content.imageUrl) {
             imageUrlValue = item.content.imageUrl;
         }
 
         if (!imageUrlValue && !contentText.includes('|TAPESTRY_META|')) {
-           // Fallback to legacy properties if they ever get fixed in the Tapestry API response mappings
            const textProp = item.content.properties?.find((p: any) => p.key === 'text')
            const subnetProp = item.content.properties?.find((p: any) => p.key === 'subnet')
            const imageProp = item.content.properties?.find((p: any) => p.key === 'imageUrl')
@@ -91,24 +88,18 @@ export default function HomeFeedPage() {
           }
         })
       
-      // Filter out empty posts without text and subnet posts, sort newest first
       const validPosts = tapestryPosts
         .filter(p => p.content !== 'No content' && !p.subnet)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       
       setPosts(validPosts)
-    } else {
-      setPosts([])
     }
-    } catch (error) {
-      console.error(`Error fetching ${feedType} feed:`, error)
-      setPosts([])
+    } catch (e) {
+      console.error(e)
     } finally {
       setIsLoadingFeed(false)
     }
   }, [feedType, publicKey])
-
-  useFollowEvent(fetchPosts)
 
   useEffect(() => {
     fetchPosts()
@@ -116,19 +107,11 @@ export default function HomeFeedPage() {
 
   const handleCreatePost = async (content: string, subnet: string, imageUrl?: string) => {
     if (!connected || !publicKey) return
-
     setIsSubmitting(true)
     try {
-      // Basic post props
       const properties: { key: string; value: string }[] = []
-      if (subnet) {
-        properties.push({ key: 'subnet', value: subnet })
-      }
-      
-      // Attach Image ID if provided
-      if (imageUrl && imageUrl.trim() !== '') {
-        properties.push({ key: 'imageUrl', value: imageUrl.trim() })
-      }
+      if (subnet) properties.push({ key: 'subnet', value: subnet })
+      if (imageUrl) properties.push({ key: 'imageUrl', value: imageUrl })
 
       const res = await fetch('/api/contents/create', {
         method: 'POST',
@@ -140,22 +123,20 @@ export default function HomeFeedPage() {
         })
       })
 
-      if (!res.ok) {
-        throw new Error('Failed to create post')
-      }
-
-      await fetchPosts()
-    } catch (error) {
-      console.error(error)
-      alert("Failed to create post")
+      if (!res.ok) throw new Error('Failed to create post')
+      
+      setTimeout(() => fetchPosts(), 1000)
+    } catch (e) {
+      console.error(e)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const isCommunityProfile = mainUsername?.startsWith('Community_')
+
   return (
     <div className="flex w-full min-h-screen">
-      {/* Main Feed Content */}
       <main className="flex-1 w-full border-x border-[#3f3f46] pb-20 bg-black">
         <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-[#3f3f46] flex flex-col pt-2 cursor-pointer">
           <div className="flex w-full h-14">
@@ -184,7 +165,7 @@ export default function HomeFeedPage() {
           </div>
         </header>
 
-        <CreatePost onSubmit={handleCreatePost} isLoading={isSubmitting} />
+        {!isCommunityProfile && <CreatePost onSubmit={handleCreatePost} isLoading={isSubmitting} />}
         
         <div className="w-full">
           {isLoadingFeed ? (
@@ -196,7 +177,6 @@ export default function HomeFeedPage() {
           )}
         </div>
       </main>
-
     </div>
   )
 }

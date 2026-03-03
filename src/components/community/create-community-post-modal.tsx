@@ -29,12 +29,8 @@ export function CreateCommunityPostModal({
     
     setIsSubmitting(true)
     try {
-      // Format the content to include the title naturally since tapestry only accepts a single text field
       const fullContent = title.trim() ? `**${title.trim()}**\n\n${description.trim()}` : description.trim()
-      
       await onSubmit(fullContent, communityName, imageUrl)
-      
-      // Reset and close on success
       setTitle('')
       setDescription('')
       setImageUrl('')
@@ -49,53 +45,57 @@ export function CreateCommunityPostModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-[#1d9aef] to-[#0ea5e9] hover:from-[#1a8cd8] hover:to-[#0284c7] text-white shadow-[0_0_20px_rgba(29,154,239,0.3)] hover:shadow-[0_0_25px_rgba(29,154,239,0.4)] font-bold rounded-full text-sm h-9 px-6 transition-all duration-200 transform hover:scale-105 active:scale-95 border border-[#1d9aef]/20">
+        <Button className="bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] font-black uppercase tracking-widest rounded-full text-[12px] h-8 px-5 transition-all duration-300 transform active:scale-95 border-none">
           Create Post
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[500px] bg-zinc-950 border-zinc-800 p-0 overflow-hidden text-white gap-0">
-        <DialogHeader className="px-5 py-4 border-b border-zinc-900 bg-black">
-          <DialogTitle className="text-xl font-bold">Create Post</DialogTitle>
+      <DialogContent className="sm:max-w-[500px] bg-zinc-950 border-zinc-800 p-0 overflow-hidden text-white gap-0 shadow-2xl">
+        <DialogHeader className="px-5 py-4 border-b border-white/5 bg-black">
+          <DialogTitle className="text-xl font-bold tracking-tight">Post into {communityName}</DialogTitle>
         </DialogHeader>
         
-        <div className="p-5 flex flex-col gap-4 bg-zinc-950">
+        <div className="p-5 flex flex-col gap-4 bg-zinc-950/50 backdrop-blur-xl">
           <div className="flex flex-col gap-2">
             <input 
               type="text" 
-              placeholder="Title" 
+              placeholder="Post Title (Optional)" 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-transparent border-none text-xl font-bold text-white placeholder:text-zinc-500 focus:outline-none focus:ring-0 px-1 placeholder:font-bold"
+              className="w-full bg-transparent border-none text-xl font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:ring-0 px-1"
               disabled={isSubmitting}
               autoFocus
             />
           </div>
           
           <Textarea 
-            placeholder="Post description..."
+            placeholder="Share what's on your mind..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full min-h-[120px] bg-transparent border-none text-base text-white placeholder:text-zinc-600 focus-visible:ring-0 p-1 resize-none shadow-none"
+            className="w-full min-h-[140px] bg-transparent border-none text-base text-zinc-300 placeholder:text-zinc-600 focus-visible:ring-0 p-1 resize-none shadow-none leading-relaxed"
             disabled={isSubmitting}
           />
           
-          <div className="mt-2 animate-in fade-in duration-200">
-             <input 
-               type="text" 
-               placeholder="Paste Image URL here... (Optional)" 
-               className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-[#1d9aef] transition-colors"
-               value={imageUrl}
-               onChange={(e) => setImageUrl(e.target.value)}
-               disabled={isSubmitting}
-             />
+          <div className="mt-2 animate-in fade-in duration-300">
+             <div className="relative group">
+               <input 
+                 type="text" 
+                 placeholder="Paste Image URL here... (Optional)" 
+                 className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-zinc-300 focus:outline-none focus:border-[#1d9aef]/50 transition-all placeholder:text-zinc-700"
+                 value={imageUrl}
+                 onChange={(e) => setImageUrl(e.target.value)}
+                 disabled={isSubmitting}
+               />
+               <ImageIcon className="absolute right-3.5 top-3 h-4 w-4 text-zinc-700 group-focus-within:text-[#1d9aef]/50 transition-colors" />
+             </div>
+             
              {imageUrl && (
-               <div className="mt-3 relative rounded-lg overflow-hidden border border-zinc-800 bg-black h-40 flex items-center justify-center">
+               <div className="mt-4 relative rounded-xl overflow-hidden border border-white/10 bg-black h-48 flex items-center justify-center p-1">
                  {/* eslint-disable-next-line @next/next/no-img-element */}
                  <img 
                    src={imageUrl} 
                    alt="Preview" 
-                   className="max-h-full max-w-full object-contain"
+                   className="max-h-full max-w-full object-contain rounded-lg shadow-2xl"
                    onError={(e) => {
                      (e.target as HTMLImageElement).style.display = 'none';
                    }}
@@ -108,14 +108,14 @@ export function CreateCommunityPostModal({
           </div>
         </div>
         
-        <div className="px-5 py-3 border-t border-zinc-900 bg-black flex justify-end items-center">
+        <div className="px-5 py-4 border-t border-white/5 bg-black flex justify-end items-center">
           <Button 
             onClick={handleSubmit}
             disabled={(!title.trim() && !description.trim()) || isSubmitting || !connected}
-            className="bg-[#1d9aef] hover:bg-[#1a8cd8] text-white rounded-full px-6 transition-all font-bold disabled:opacity-50"
+            className="bg-[#1d9aef] hover:bg-[#1a8cd8] text-white rounded-full px-8 h-10 transition-all font-black uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(29,154,239,0.2)]"
           >
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-            {isSubmitting ? 'Posting...' : 'Post'}
+            {isSubmitting ? 'Posting...' : 'Post Content'}
           </Button>
         </div>
       </DialogContent>
