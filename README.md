@@ -12,26 +12,17 @@ Tapestry Social is a fully-featured decentralized social platform built on Solan
 - **Optimized Performance**: Built with Next.js App Router for blazing-fast load times.
 - **Responsive Design**: Carefully crated mobile and desktop unified views.
 
-![Layout UI Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/feed.png)
-
 ### 2. **Rich Content & Subnets**
 - **Integrated Feed**: Users can seamlessly read and write posts across different communities.
 - **Markdown & Image Support**: Posts fully support rich text, image attachments, and embeds.
 - **Community Subnets Categories**: Posts are automatically categorized into community-specific subnets. Metadata allows subnets to filter global feeds.
 - **CRUD Operations**: Users can seamlessly edit and delete posts dynamically.
 
-![Feed Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/discover.png)
-![Feed Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/communtiy_page.png)
-
 ### 3. **Decentralized Identity & Profiles**
 - **Solana Wallet Integration**: Full support for Solana wallets via Privy/Standard Adapters.
 - **Customizable Profiles**: Set up custom bio, avatar, and banner with integrated Tapestry protocol API routes.
 - **Reputation-Centric Profiles**: Profiles prominently display decentralized reputation (FairScore), total followers, and joined subnets.
 - **User Following Strategy**: On-chain user relationships leveraging Tapestry Social Graph.
-
-![Profile UI Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/profile.png)
-![Profile UI Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/create-profile.png)
-
 
 ### 4. **Gated Communities & FairScore Ecosystem**
 Create and join niche communities that are gated natively by on-chain reputation logic.
@@ -40,10 +31,36 @@ Create and join niche communities that are gated natively by on-chain reputation
 - **Configurable Restrictions**: Community leads can set and update reputation requirements (e.g., "Fairscore > 200 required to join/post").
 - **UI Enforcements**: Beautifully integrated lock screens, gated badges, and conditional feed rendering based on users' real-time score.
 
-![Gated Communities Placeholder](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/gated.png)
-
 ### 5. **On-Chain Social Graph Base**
 Powered by Tapestry, every follow, post, modification, and community interaction is recorded on the social graph securely. Data ownership and interoperability are globally guaranteed across the Solana ecosystem.
+
+---
+
+## 📸 Product Gallery
+
+### 1. Profile Creation (User & Community)
+Set up your decentralized identity or launch a new community in seconds.
+![Profile Creation](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/create-profile.png)
+
+### 2. User Feed Page
+A unified view of posts from the communities you've joined and the people you follow.
+![Feed Page](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/feed.png)
+
+### 3. Personal Profile Page
+Your on-chain social resume, featuring your FairScore, posts, and social graph.
+![Profile Page](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/profile.png)
+
+### 4. Discover Communities
+Browse and find new subnets to join based on your interests and reputation.
+![Discover Communities](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/discover.png)
+
+### 5. Public Community Feed
+Engage with open-access subnets available to all Tapestry users.
+![Public Community](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/communtiy_page.png)
+
+### 6. Gated Community Feed
+Exclusive subnets protected by FairScore requirements—only for high-reputation members.
+![Gated Community](https://github.com/akshaydhayal/Tapestry-Social/blob/main/demo/gated.png)
 
 
 ## 🛠️ Tech Stack
