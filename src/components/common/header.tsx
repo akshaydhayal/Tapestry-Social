@@ -6,6 +6,7 @@ import { DialectNotificationComponent } from '../notifications/dialect-notificat
 import { useProfileStore } from '@/store/profile'
 import { useAllProfiles } from '@/hooks/use-all-profiles'
 import { Home, Users, User, Hash, Lock, Globe } from 'lucide-react'
+import { extractCommunityMeta } from '@/utils/community-meta'
 
 export function Header() {
   const { mainUsername } = useProfileStore()
@@ -67,20 +68,13 @@ export function Header() {
           <div className="flex flex-col gap-1">
             {popularCommunities.length > 0 ? popularCommunities.map((community: any, idx: number) => {
               const username = community.profile?.username || ''
-              let name = username.replace('Community_', '')
-              let meta: any = {}
-              try {
-                const parts = community.profile?.bio?.split('|||META|||')
-                if (parts && parts.length > 1) {
-                  meta = JSON.parse(parts[1])
-                  if (meta.name) name = meta.name
-                }
-              } catch {}
+              const { meta } = extractCommunityMeta(community.profile?.bio)
+              const name = meta?.name || username.replace('Community_', '')
 
               // DEMO OVERRIDE: hardcode uidesigners as gated
               const isDemoGated = username === 'Community_uidesigners'
-              const isRestricted = isDemoGated || (meta.gateType === 'fairscore' && meta.fairScoreGate > 0)
-              const displayGateScore = isDemoGated ? 200 : (meta.fairScoreGate || 0)
+              const isRestricted = isDemoGated || (meta?.gateType === 'fairscore' && meta?.fairScoreGate && meta.fairScoreGate > 0)
+              const displayGateScore = isDemoGated ? 200 : (meta?.fairScoreGate || 0)
 
               return (
                 <Link href={`/${username}`} key={idx} className="group flex flex-col gap-1.5 py-2.5 px-2 rounded-xl transition-all hover:bg-zinc-900 border border-transparent hover:border-zinc-800">

@@ -3,13 +3,14 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { extractCommunityMeta } from '@/utils/community-meta'
 import { getCleanBio, getCommunityDescription } from '@/utils/bio-utils'
-import { Hash, Lock, Globe, Loader2, AlertCircle } from 'lucide-react'
+import { Hash, Lock, Globe, Loader2, AlertCircle, Settings } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Feed } from '@/components/feed/feed'
 import { PostProps } from '@/components/feed/post-card'
 import { CreateCommunityPostModal } from './create-community-post-modal'
+import { EditCommunityModal } from './edit-community-modal'
 
 import { useGetFollowersState } from '@/components/profile/hooks/use-get-follower-state'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
@@ -50,6 +51,10 @@ export function CommunityContent({ communityProfile }: Props) {
   })
   const { followUser, loading: followLoading } = useFollowUser()
   const [joinError, setJoinError] = useState('')
+  const [showEditModal, setShowEditModal] = useState(false)
+
+  const isOwner = walletAddress && communityProfile.wallet?.address &&
+    walletAddress.toLowerCase() === communityProfile.wallet.address.toLowerCase()
 
   const isJoined = followState?.isFollowing || walletAddress === communityProfile.wallet?.address
   const canView = !isGated || isJoined
@@ -198,6 +203,15 @@ export function CommunityContent({ communityProfile }: Props) {
             </div>
 
             <div className="flex items-center gap-3 relative z-10">
+              {isOwner && (
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  className="h-8 w-8 flex items-center justify-center rounded-full border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 transition-all"
+                  title="Edit Community Settings"
+                >
+                  <Settings className="h-4 w-4" />
+                </button>
+              )}
               {canPost && (
                 <CreateCommunityPostModal onSubmit={handleCreatePost} communityName={name} />
               )}
@@ -294,6 +308,15 @@ export function CommunityContent({ communityProfile }: Props) {
           </div>
         )}
       </div>
+
+      {showEditModal && (
+        <EditCommunityModal
+          communityProfile={communityProfile}
+          onClose={() => setShowEditModal(false)}
+          onSaved={() => window.location.reload()}
+        />
+      )}
     </>
   )
 }
+
